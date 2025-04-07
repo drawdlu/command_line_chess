@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
+require_relative '../lib/positions'
+
 # Handles state of board
 class Board
-  LETTER_POSITIONS = %w[A B C D E F G H].freeze
+  include Positions
 
   def initialize
     @board = Array.new(8) { Array.new(8, nil) }
@@ -14,6 +16,11 @@ class Board
       print_row(row, x_index)
     end
     print_line
+  end
+
+  def empty?(position)
+    index = get_name_index(position)
+    @board[index[0]][index[1]].nil?
   end
 
   private
@@ -36,9 +43,5 @@ class Board
 
   def print_space
     print '                '
-  end
-
-  def square_name(x_index, y_index)
-    LETTER_POSITIONS[x_index] + (8 - y_index).to_s
   end
 end
