@@ -24,7 +24,9 @@ class Pawn < Piece
     diagonal_moves = get_diagonal_moves(current_index[1], current_index[0], direction)
 
     diagonal_moves.each do |move|
-      moves << move unless @board.empty?(move)
+      next if @board.empty?(move)
+
+      moves << move unless ally?(move)
     end
 
     double = get_double_move(current_index[1], current_index[0], direction)
@@ -45,9 +47,9 @@ class Pawn < Piece
     first_position = @color == :white ? 6 : 1
 
     if @color == :white
-      first_position == y_index ? square_name(x_index, y_index + direction - 1) : nil
+      first_position == y_index ? square_name(x_index, y_index + (direction * 2)) : nil
     else
-      first_position == y_index ? square_name(x_index, y_index + direction + 1) : nil
+      first_position == y_index ? square_name(x_index, y_index + (direction * 2)) : nil
     end
   end
 end
