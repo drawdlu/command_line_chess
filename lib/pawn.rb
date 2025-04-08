@@ -26,7 +26,7 @@ class Pawn < Piece
     diagonal_moves.each do |move|
       next if @board.empty?(move)
 
-      moves << move unless ally?(move)
+      moves << move if opponent?(move)
     end
 
     double = get_double_move(current_index[1], current_index[0], direction)

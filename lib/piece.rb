@@ -10,9 +10,9 @@ class Piece
     @board = board
   end
 
-  def ally?(position)
+  def opponent?(position)
     index = get_name_index(position)
 
-    @board.board[index[0]][index[1]].color == @color
+    @board.board[index[0]][index[1]].color != @color
   end
 end

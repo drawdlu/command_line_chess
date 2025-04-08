@@ -31,7 +31,7 @@ describe Pawn do
           allow(board).to receive(:empty?).with('D3').and_return(false)
           allow(board).to receive(:empty?).with('B3').and_return(true)
           allow(board).to receive(:empty?).with('C4').and_return(true)
-          allow(piece).to receive(:ally?).and_return(false)
+          allow(piece).to receive(:opponent?).and_return(true)
         end
 
         it 'will return [C3, D3, C4]' do
@@ -46,7 +46,7 @@ describe Pawn do
           allow(board).to receive(:empty?).with('D3').and_return(true)
           allow(board).to receive(:empty?).with('B3').and_return(false)
           allow(board).to receive(:empty?).with('C4').and_return(true)
-          allow(piece).to receive(:ally?).and_return(true)
+          allow(piece).to receive(:opponent?).and_return(false)
         end
 
         it 'will return []' do
@@ -118,7 +118,7 @@ describe Pawn do
           allow(board).to receive(:empty?).with('D6').and_return(false)
           allow(board).to receive(:empty?).with('B6').and_return(true)
           allow(board).to receive(:empty?).with('C5').and_return(true)
-          allow(piece).to receive(:ally?).and_return(false)
+          allow(piece).to receive(:opponent?).and_return(true)
         end
 
         it 'will return [C6, D6, C5]' do
@@ -133,7 +133,7 @@ describe Pawn do
           allow(board).to receive(:empty?).with('D6').and_return(true)
           allow(board).to receive(:empty?).with('B6').and_return(false)
           allow(board).to receive(:empty?).with('C5').and_return(true)
-          allow(piece).to receive(:ally?).and_return(true)
+          allow(piece).to receive(:opponent?).and_return(false)
         end
 
         it 'will return []' do
@@ -148,7 +148,7 @@ describe Pawn do
           allow(board).to receive(:empty?).with('D6').and_return(true)
           allow(board).to receive(:empty?).with('B6').and_return(false)
           allow(board).to receive(:empty?).with('C5').and_return(true)
-          allow(piece).to receive(:ally?).and_return(true)
+          allow(piece).to receive(:opponent?).and_return(false)
         end
 
         it 'will return []' do
