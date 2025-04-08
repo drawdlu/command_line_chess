@@ -12,20 +12,24 @@ class Pawn < Piece
     current_index = get_name_index(@current_position)
 
     # white goes up vertically in the 2d array and black goes the opposite way
+    # forward move
     direction = @color == :white ? -1 : 1
-
     forward = square_name(current_index[1], current_index[0] + direction)
     moves.push(forward) if @board.empty?(forward)
 
-    diagonal = []
-    x_index = current_index[1]
-    y_index = current_index[0]
-    diagonal.push(square_name(x_index + 1, y_index + direction)) if x_index + 1 < BOARD_SIZE
-    diagonal.push(square_name(x_index - 1, y_index + direction)) if (x_index - 1) >= 0
+    diagonal_moves = get_diagonal_moves(current_index[1], current_index[0], direction)
 
-    diagonal.each do |move|
+    diagonal_moves.each do |move|
       moves << move unless @board.empty?(move)
     end
+
+    moves
+  end
+
+  def get_diagonal_moves(x_index, y_index, direction)
+    moves = []
+    moves.push(square_name(x_index + 1, y_index + direction)) if x_index + 1 < BOARD_SIZE
+    moves.push(square_name(x_index - 1, y_index + direction)) unless (x_index - 1).negative?
 
     moves
   end
