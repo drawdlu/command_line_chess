@@ -5,7 +5,6 @@ require_relative '../lib/board'
 
 describe Pawn do
   let(:board) { instance_double(Board) }
-  subject(:piece) { described_class.new(:white, 'C2', board) }
 
   describe '#valid_moves' do
     context 'white pawn' do
@@ -164,6 +163,38 @@ describe Pawn do
           result = piece.valid_moves
           expect(result).to eq(['H4'])
         end
+      end
+    end
+  end
+
+  describe '#move' do
+    context 'when moving from A2 to A3 and no piece is in A3' do
+      subject(:piece) { described_class.new(:white, 'A2', board) }
+      before do
+        allow(board).to receive(:empty?).with('A3').and_return(true)
+        allow(board).to receive(:empty?).with('B3').and_return(true)
+      end
+
+      it 'will return the move A3 and update current_position' do
+        result = piece.move('A3')
+        current_position = piece.instance_variable_get(:@current_position)
+        expect(result).to eq('A3')
+        expect(current_position).to eq('A3')
+      end
+    end
+
+    context 'when moving from A2 to non valid move A5' do
+      subject(:piece) { described_class.new(:white, 'A2', board) }
+      before do
+        allow(board).to receive(:empty?).with('A3').and_return(true)
+        allow(board).to receive(:empty?).with('B3').and_return(true)
+      end
+
+      it 'will return nil and does not update current_position' do
+        result = piece.move('A5')
+        current_position = piece.instance_variable_get(:@current_position)
+        expect(result).to eq(nil)
+        expect(current_position).to eq('A2')
       end
     end
   end

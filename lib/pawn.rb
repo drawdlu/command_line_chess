@@ -7,6 +7,10 @@ require_relative 'positions'
 class Pawn < Piece
   include Positions
 
+  def move(to_position)
+    valid_moves.include?(to_position) ? @current_position = to_position : nil
+  end
+
   def valid_moves
     moves = []
     current_index = get_name_index(@current_position)
