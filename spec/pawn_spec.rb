@@ -15,11 +15,12 @@ describe Pawn do
           allow(board).to receive(:empty?).with('C3').and_return(true)
           allow(board).to receive(:empty?).with('D3').and_return(true)
           allow(board).to receive(:empty?).with('B3').and_return(true)
+          allow(board).to receive(:empty?).with('C4').and_return(true)
         end
 
-        it 'will return [C3]' do
+        it 'will return [C3, C4]' do
           result = piece.valid_moves
-          expect(result).to eq(['C3'])
+          expect(result).to eq(%w[C3 C4])
         end
       end
 
@@ -28,19 +29,21 @@ describe Pawn do
           allow(board).to receive(:empty?).with('C3').and_return(true)
           allow(board).to receive(:empty?).with('D3').and_return(false)
           allow(board).to receive(:empty?).with('B3').and_return(true)
+          allow(board).to receive(:empty?).with('C4').and_return(true)
         end
 
         it 'will return [C3, D3]' do
           result = piece.valid_moves
-          expect(result).to eq(%w[C3 D3])
+          expect(result).to eq(%w[C3 D3 C4])
         end
       end
 
-      context 'when a piece is in front and a piece is present on the diagonal left' do
+      context 'when a piece is in front but not at double and a piece is present on the diagonal left' do
         before do
           allow(board).to receive(:empty?).with('C3').and_return(false)
           allow(board).to receive(:empty?).with('D3').and_return(true)
           allow(board).to receive(:empty?).with('B3').and_return(false)
+          allow(board).to receive(:empty?).with('C4').and_return(true)
         end
 
         it 'will return [B3]' do
@@ -54,6 +57,7 @@ describe Pawn do
           allow(board).to receive(:empty?).with('C3').and_return(false)
           allow(board).to receive(:empty?).with('D3').and_return(true)
           allow(board).to receive(:empty?).with('B3').and_return(true)
+          allow(board).to receive(:empty?).with('C4').and_return(true)
         end
 
         it 'will return []' do
@@ -67,10 +71,11 @@ describe Pawn do
         before do
           allow(board).to receive(:empty?).with('A3').and_return(true)
           allow(board).to receive(:empty?).with('B3').and_return(true)
+          allow(board).to receive(:empty?).with('A4').and_return(true)
         end
-        it 'will return [A3]' do
+        it 'will return [A3 A4]' do
           result = piece.valid_moves
-          expect(result).to eq(['A3'])
+          expect(result).to eq(%w[A3 A4])
         end
       end
 
@@ -79,10 +84,11 @@ describe Pawn do
         before do
           allow(board).to receive(:empty?).with('H3').and_return(true)
           allow(board).to receive(:empty?).with('G3').and_return(true)
+          allow(board).to receive(:empty?).with('H4').and_return(true)
         end
-        it 'will return [H3]' do
+        it 'will return [H3 H4]' do
           result = piece.valid_moves
-          expect(result).to eq(['H3'])
+          expect(result).to eq(%w[H3 H4])
         end
       end
     end
@@ -94,11 +100,12 @@ describe Pawn do
           allow(board).to receive(:empty?).with('C6').and_return(true)
           allow(board).to receive(:empty?).with('D6').and_return(true)
           allow(board).to receive(:empty?).with('B6').and_return(true)
+          allow(board).to receive(:empty?).with('C5').and_return(true)
         end
 
-        it 'will return [C6]' do
+        it 'will return [C6 C5]' do
           result = piece.valid_moves
-          expect(result).to eq(['C6'])
+          expect(result).to eq(%w[C6 C5])
         end
       end
 
@@ -107,19 +114,21 @@ describe Pawn do
           allow(board).to receive(:empty?).with('C6').and_return(true)
           allow(board).to receive(:empty?).with('D6').and_return(false)
           allow(board).to receive(:empty?).with('B6').and_return(true)
+          allow(board).to receive(:empty?).with('C5').and_return(true)
         end
 
-        it 'will return [C6, D6]' do
+        it 'will return [C6, D6, C5]' do
           result = piece.valid_moves
-          expect(result).to eq(%w[C6 D6])
+          expect(result).to eq(%w[C6 D6 C5])
         end
       end
 
-      context 'when a piece is in front and a piece is present on the left' do
+      context 'when a piece is in front and a piece is present on the left and no piece is at double' do
         before do
           allow(board).to receive(:empty?).with('C6').and_return(false)
           allow(board).to receive(:empty?).with('D6').and_return(true)
           allow(board).to receive(:empty?).with('B6').and_return(false)
+          allow(board).to receive(:empty?).with('C5').and_return(true)
         end
 
         it 'will return [B6]' do
@@ -133,6 +142,7 @@ describe Pawn do
           allow(board).to receive(:empty?).with('C6').and_return(false)
           allow(board).to receive(:empty?).with('D6').and_return(true)
           allow(board).to receive(:empty?).with('B6').and_return(true)
+          allow(board).to receive(:empty?).with('C5').and_return(true)
         end
 
         it 'will return []' do
@@ -146,10 +156,11 @@ describe Pawn do
         before do
           allow(board).to receive(:empty?).with('A6').and_return(true)
           allow(board).to receive(:empty?).with('B6').and_return(true)
+          allow(board).to receive(:empty?).with('A5').and_return(true)
         end
-        it 'will return [A6]' do
+        it 'will return [A6 A5]' do
           result = piece.valid_moves
-          expect(result).to eq(['A6'])
+          expect(result).to eq(%w[A6 A5])
         end
       end
 
@@ -168,11 +179,12 @@ describe Pawn do
   end
 
   describe '#move' do
+    subject(:piece) { described_class.new(:white, 'A2', board) }
     context 'when moving from A2 to A3 and no piece is in A3' do
-      subject(:piece) { described_class.new(:white, 'A2', board) }
       before do
         allow(board).to receive(:empty?).with('A3').and_return(true)
         allow(board).to receive(:empty?).with('B3').and_return(true)
+        allow(board).to receive(:empty?).with('A4').and_return(true)
       end
 
       it 'will return the move A3 and update current_position' do
@@ -184,14 +196,44 @@ describe Pawn do
     end
 
     context 'when moving from A2 to non valid move A5' do
-      subject(:piece) { described_class.new(:white, 'A2', board) }
       before do
         allow(board).to receive(:empty?).with('A3').and_return(true)
         allow(board).to receive(:empty?).with('B3').and_return(true)
+        allow(board).to receive(:empty?).with('A4').and_return(true)
       end
 
       it 'will return nil and does not update current_position' do
         result = piece.move('A5')
+        current_position = piece.instance_variable_get(:@current_position)
+        expect(result).to eq(nil)
+        expect(current_position).to eq('A2')
+      end
+    end
+
+    context 'when moving from A2 to a valid double move A4' do
+      before do
+        allow(board).to receive(:empty?).with('A3').and_return(true)
+        allow(board).to receive(:empty?).with('B3').and_return(true)
+        allow(board).to receive(:empty?).with('A4').and_return(true)
+      end
+
+      it 'will return A4 and update current_position' do
+        result = piece.move('A4')
+        current_position = piece.instance_variable_get(:@current_position)
+        expect(result).to eq('A4')
+        expect(current_position).to eq('A4')
+      end
+    end
+
+    context 'when moving from A2 to a invalid double move because a piece is in single move' do
+      before do
+        allow(board).to receive(:empty?).with('A3').and_return(false)
+        allow(board).to receive(:empty?).with('B3').and_return(true)
+        allow(board).to receive(:empty?).with('A4').and_return(true)
+      end
+
+      it 'will return nil and does not update current position' do
+        result = piece.move('A4')
         current_position = piece.instance_variable_get(:@current_position)
         expect(result).to eq(nil)
         expect(current_position).to eq('A2')

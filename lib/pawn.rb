@@ -27,6 +27,9 @@ class Pawn < Piece
       moves << move unless @board.empty?(move)
     end
 
+    double = get_double_move(current_index[1], current_index[0], direction)
+    moves.push(double) if !double.nil? && @board.empty?(double) && @board.empty?(forward)
+
     moves
   end
 
@@ -36,5 +39,15 @@ class Pawn < Piece
     moves.push(square_name(x_index - 1, y_index + direction)) unless (x_index - 1).negative?
 
     moves
+  end
+
+  def get_double_move(x_index, y_index, direction)
+    first_position = @color == :white ? 6 : 1
+
+    if @color == :white
+      first_position == y_index ? square_name(x_index, y_index + direction - 1) : nil
+    else
+      first_position == y_index ? square_name(x_index, y_index + direction + 1) : nil
+    end
   end
 end
