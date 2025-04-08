@@ -3,6 +3,7 @@
 # converting position names and index
 module Positions
   LETTER_POSITIONS = %w[A B C D E F G H].freeze
+  BOARD_SIZE = 8
 
   def get_name_index(position)
     letter = position[0]

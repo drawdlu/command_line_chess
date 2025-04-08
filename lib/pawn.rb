@@ -17,10 +17,11 @@ class Pawn < Piece
     forward = square_name(current_index[1], current_index[0] + direction)
     moves.push(forward) if @board.empty?(forward)
 
-    diagonal = [
-      square_name(current_index[1] + 1, current_index[0] + direction),
-      square_name(current_index[1] - 1, current_index[0] + direction)
-    ]
+    diagonal = []
+    x_index = current_index[1]
+    y_index = current_index[0]
+    diagonal.push(square_name(x_index + 1, y_index + direction)) if x_index + 1 < BOARD_SIZE
+    diagonal.push(square_name(x_index - 1, y_index + direction)) if (x_index - 1) >= 0
 
     diagonal.each do |move|
       moves << move unless @board.empty?(move)

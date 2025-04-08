@@ -9,6 +9,8 @@ describe Pawn do
 
   describe '#valid_moves' do
     context 'white pawn' do
+      subject(:piece) { described_class.new(:white, 'C2', board) }
+
       context 'when no pieces are in front and diagonally' do
         before do
           allow(board).to receive(:empty?).with('C3').and_return(true)
@@ -58,6 +60,30 @@ describe Pawn do
         it 'will return []' do
           result = piece.valid_moves
           expect(result).to eq([])
+        end
+      end
+
+      context 'when a piece is at A2 and no pieces in front and diagonal' do
+        subject(:piece) { described_class.new(:white, 'A2', board) }
+        before do
+          allow(board).to receive(:empty?).with('A3').and_return(true)
+          allow(board).to receive(:empty?).with('B3').and_return(true)
+        end
+        it 'will return [A3]' do
+          result = piece.valid_moves
+          expect(result).to eq(['A3'])
+        end
+      end
+
+      context 'when a piece is at H2 and no pieces in front and diagonal' do
+        subject(:piece) { described_class.new(:white, 'H2', board) }
+        before do
+          allow(board).to receive(:empty?).with('H3').and_return(true)
+          allow(board).to receive(:empty?).with('G3').and_return(true)
+        end
+        it 'will return [H3]' do
+          result = piece.valid_moves
+          expect(result).to eq(['H3'])
         end
       end
     end
@@ -113,6 +139,30 @@ describe Pawn do
         it 'will return []' do
           result = piece.valid_moves
           expect(result).to eq([])
+        end
+      end
+
+      context 'when a piece is at A7 and no pieces in front and diagonal' do
+        subject(:piece) { described_class.new(:black, 'A7', board) }
+        before do
+          allow(board).to receive(:empty?).with('A6').and_return(true)
+          allow(board).to receive(:empty?).with('B6').and_return(true)
+        end
+        it 'will return [A6]' do
+          result = piece.valid_moves
+          expect(result).to eq(['A6'])
+        end
+      end
+
+      context 'when a piece is at H5 and no pieces in front and diagonal' do
+        subject(:piece) { described_class.new(:black, 'H5', board) }
+        before do
+          allow(board).to receive(:empty?).with('H4').and_return(true)
+          allow(board).to receive(:empty?).with('G4').and_return(true)
+        end
+        it 'will return [H4]' do
+          result = piece.valid_moves
+          expect(result).to eq(['H4'])
         end
       end
     end
