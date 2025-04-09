@@ -58,5 +58,75 @@ describe Rook do
         expect(result).to be_falsy
       end
     end
+
+    context 'D3 to D7 where a piece is in D6' do
+      before do
+        allow(board).to receive(:empty?).exactly(3).times.and_return(true, true, false)
+      end
+      it 'returns False' do
+        result = rook.no_pieces_on_path?('D7')
+        expect(result).to be_falsy
+      end
+    end
+  end
+
+  describe '#move' do
+    context 'D3 to E3 where E3 is empty' do
+      before do
+        allow(board).to receive(:empty?).and_return(true)
+      end
+
+      it 'returns value of position' do
+        result = rook.move('E3')
+        expect(result).to eq('E3')
+      end
+    end
+
+    context 'D3 to E3 where E3 is an opponent' do
+      before do
+        allow(board).to receive(:empty?).and_return(false)
+        allow(rook).to receive(:opponent?).and_return(true)
+      end
+
+      it 'returns value of position' do
+        result = rook.move('E3')
+        expect(result).to eq('E3')
+      end
+    end
+
+    context 'D3 to E3 where E3 is an ally' do
+      before do
+        allow(board).to receive(:empty?).and_return(false)
+        allow(rook).to receive(:opponent?).and_return(false)
+      end
+
+      it 'returns nil' do
+        result = rook.move('E3')
+        expect(result).to eq(nil)
+      end
+    end
+
+    context 'D3 to D7 where there is a piece on D6' do
+      before do
+        allow(board).to receive(:empty?).exactly(3).times.and_return(true, true, false)
+      end
+
+      it 'returns nil' do
+        result = rook.move('D7')
+        expect(result).to eq(nil)
+      end
+    end
+
+    context 'D3 to D8 where theres is an ally on D8' do
+      before do
+        allow(board).to receive(:empty?).exactly(5).times.and_return(true, true, true, true, false)
+        allow(rook).to receive(:opponent?).and_return(false)
+      end
+
+      it 'returns nil' do
+        result = rook.move('D8')
+        expect(result).to eq(nil)
+      end
+    end
   end
 end
