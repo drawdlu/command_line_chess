@@ -7,10 +7,13 @@ require_relative 'board'
 # Controls rook movements
 class Rook < Piece
   def move(position)
-    if horizontal_or_vertical_move?(position) && no_pieces_on_path?(position) &&
-       (@board.empty?(position) || opponent?(position))
-      @current_position = position
-    end
+    return false unless horizontal_or_vertical_move?(position) &&
+                        no_pieces_on_path?(position) &&
+                        (@board.empty?(position) || opponent?(position))
+
+    @current_position = position
+
+    true
   end
 
   def horizontal_or_vertical_move?(position)

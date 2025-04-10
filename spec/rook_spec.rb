@@ -76,9 +76,11 @@ describe Rook do
         allow(board).to receive(:empty?).and_return(true)
       end
 
-      it 'returns value of position' do
+      it 'returns true and updates position value' do
         result = rook.move('E3')
-        expect(result).to eq('E3')
+        position = rook.instance_variable_get(:@current_position)
+        expect(result).to be_truthy
+        expect(position).to eq('E3')
       end
     end
 
@@ -88,9 +90,11 @@ describe Rook do
         allow(rook).to receive(:opponent?).and_return(true)
       end
 
-      it 'returns value of position' do
+      it 'returns true and updates position value' do
         result = rook.move('E3')
-        expect(result).to eq('E3')
+        position = rook.instance_variable_get(:@current_position)
+        expect(result).to be_truthy
+        expect(position).to eq('E3')
       end
     end
 
@@ -100,9 +104,11 @@ describe Rook do
         allow(rook).to receive(:opponent?).and_return(false)
       end
 
-      it 'returns nil' do
+      it 'returns false and does not update position value' do
         result = rook.move('E3')
-        expect(result).to eq(nil)
+        position = rook.instance_variable_get(:@current_position)
+        expect(result).to be_falsy
+        expect(position).to eq('D3')
       end
     end
 
@@ -111,9 +117,11 @@ describe Rook do
         allow(board).to receive(:empty?).exactly(3).times.and_return(true, true, false)
       end
 
-      it 'returns nil' do
+      it 'returns false and does not update position value' do
         result = rook.move('D7')
-        expect(result).to eq(nil)
+        position = rook.instance_variable_get(:@current_position)
+        expect(result).to be_falsy
+        expect(position).to eq('D3')
       end
     end
 
@@ -123,9 +131,11 @@ describe Rook do
         allow(rook).to receive(:opponent?).and_return(false)
       end
 
-      it 'returns nil' do
+      it 'returns false and does not update position value' do
         result = rook.move('D8')
-        expect(result).to eq(nil)
+        position = rook.instance_variable_get(:@current_position)
+        expect(result).to be_falsy
+        expect(position).to eq('D3')
       end
     end
   end
