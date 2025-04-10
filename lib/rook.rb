@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require_relative 'piece'
-require_relative 'positions'
-require_relative 'board'
 
 # Controls rook movements
 class Rook < Piece
