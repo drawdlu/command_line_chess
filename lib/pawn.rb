@@ -8,7 +8,11 @@ class Pawn < Piece
   include Positions
 
   def move(to_position)
-    valid_moves.include?(to_position) ? @current_position = to_position : nil
+    return false unless valid_moves.include?(to_position)
+
+    @current_position = to_position
+
+    true
   end
 
   def valid_moves

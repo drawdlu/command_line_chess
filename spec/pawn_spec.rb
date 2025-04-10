@@ -193,10 +193,10 @@ describe Pawn do
         allow(board).to receive(:empty?).with('A4').and_return(true)
       end
 
-      it 'will return the move A3 and update current_position' do
+      it 'will return true and update current position' do
         result = piece.move('A3')
         current_position = piece.instance_variable_get(:@current_position)
-        expect(result).to eq('A3')
+        expect(result).to be_truthy
         expect(current_position).to eq('A3')
       end
     end
@@ -208,10 +208,10 @@ describe Pawn do
         allow(board).to receive(:empty?).with('A4').and_return(true)
       end
 
-      it 'will return nil and does not update current_position' do
+      it 'will return false and does not update current_position' do
         result = piece.move('A5')
         current_position = piece.instance_variable_get(:@current_position)
-        expect(result).to eq(nil)
+        expect(result).to be_falsy
         expect(current_position).to eq('A2')
       end
     end
@@ -223,10 +223,10 @@ describe Pawn do
         allow(board).to receive(:empty?).with('A4').and_return(true)
       end
 
-      it 'will return A4 and update current_position' do
+      it 'will return true and update current_position' do
         result = piece.move('A4')
         current_position = piece.instance_variable_get(:@current_position)
-        expect(result).to eq('A4')
+        expect(result).to be_truthy
         expect(current_position).to eq('A4')
       end
     end
@@ -238,10 +238,10 @@ describe Pawn do
         allow(board).to receive(:empty?).with('A4').and_return(true)
       end
 
-      it 'will return nil and does not update current position' do
+      it 'will return false and does not update current position' do
         result = piece.move('A4')
         current_position = piece.instance_variable_get(:@current_position)
-        expect(result).to eq(nil)
+        expect(result).to be_falsy
         expect(current_position).to eq('A2')
       end
     end
