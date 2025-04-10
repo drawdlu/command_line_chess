@@ -7,15 +7,7 @@ require_relative 'positions'
 class Pawn < Piece
   include Positions
 
-  def move(to_position)
-    return false unless valid_moves.include?(to_position)
-
-    @current_position = to_position
-
-    true
-  end
-
-  def valid_moves
+  def valid_move?(position)
     current_index = get_name_index(@current_position)
 
     # white goes up vertically in the 2d array and black goes the opposite way
@@ -26,7 +18,7 @@ class Pawn < Piece
     diagonal_moves = get_diagonal_moves(current_index[1], current_index[0], direction)
     double = get_double_move(current_index[1], current_index[0], direction)
 
-    forward + diagonal_moves + double
+    (forward + diagonal_moves + double).include?(position)
   end
 
   def get_forward_move(x_index, y_index, direction)
