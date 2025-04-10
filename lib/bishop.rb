@@ -5,7 +5,11 @@ require_relative 'piece'
 # Controls bishop movement
 class Bishop < Piece
   def move(position)
-    valid_move?(position) ? @current_position = position : nil
+    return false unless valid_move?(position)
+
+    @current_position = position
+
+    true
   end
 
   def valid_move?(position)
