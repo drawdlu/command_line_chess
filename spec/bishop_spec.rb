@@ -74,4 +74,27 @@ describe Bishop do
       end
     end
   end
+
+  describe '#move' do
+    context 'when D4 to G7 and no piece on G7' do
+      before do
+        allow(board).to receive(:empty?).and_return(true)
+      end
+      it 'returns G7 and updates current position to G7' do
+        result = bishop.move('G7')
+        position = bishop.instance_variable_get(:@current_position)
+        expect(result).to eq('G7')
+        expect(position).to eq('G7')
+      end
+    end
+
+    context 'when D4 to D8, not a valid bishop move' do
+      it 'returns nil and does not update position' do
+        result = bishop.move('D8')
+        position = bishop.instance_variable_get(:@current_position)
+        expect(result).to eq(nil)
+        expect(position).to eq('D4')
+      end
+    end
+  end
 end

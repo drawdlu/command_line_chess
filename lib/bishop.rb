@@ -4,6 +4,10 @@ require_relative 'piece'
 
 # Controls bishop movement
 class Bishop < Piece
+  def move(position)
+    valid_move?(position) ? @current_position = position : nil
+  end
+
   def valid_move?(position)
     x_direction = get_direction(@current_position[0], position[0])
     y_direction = get_direction(@current_position[1], position[1])
