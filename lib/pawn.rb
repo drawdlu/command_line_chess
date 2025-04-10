@@ -65,11 +65,7 @@ class Pawn < Piece
   end
 
   def double_move(x_index, y_index, direction, first_position)
-    if first_position == y_index
-      return square_name(x_index, y_index + (direction * 2)) if @color == :white
-
-      return square_name(x_index, y_index + (direction * 2))
-    end
+    return square_name(x_index, y_index + (direction * 2)) if first_position == y_index
 
     nil
   end
