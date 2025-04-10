@@ -21,6 +21,16 @@ class Pawn < Piece
     (forward + diagonal_moves + double).include?(position)
   end
 
+  def to_s
+    if color == :white
+      '♟ '
+    else
+      '♙ '
+    end
+  end
+
+  private
+
   def get_forward_move(x_index, y_index, direction)
     forward = square_name(x_index, y_index + direction)
 
