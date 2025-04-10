@@ -70,4 +70,28 @@ describe Queen do
       end
     end
   end
+
+  describe '#move' do
+    context 'when D4 to G1 with no pieces around' do
+      before do
+        allow(board).to receive(:empty?).and_return(true)
+      end
+
+      it 'returns True and updates position' do
+        result = queen.move('G1')
+        position = queen.instance_variable_get(:@current_position)
+        expect(result).to be_truthy
+        expect(position).to eq('G1')
+      end
+    end
+
+    context 'when D4 to H7, not a valid Queen move' do
+      it 'returns false and does not update position' do
+        result = queen.move('H7')
+        position = queen.instance_variable_get(:@current_position)
+        expect(result).to be_falsy
+        expect(position).to eq('D4')
+      end
+    end
+  end
 end

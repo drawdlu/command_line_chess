@@ -56,4 +56,12 @@ class Piece
   def vertical_horizontal?(position)
     @current_position[0] == position[0] || @current_position[1] == position[1]
   end
+
+  def move(position)
+    return false unless valid_move?(position)
+
+    @current_position = position
+
+    true
+  end
 end
