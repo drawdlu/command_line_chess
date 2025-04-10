@@ -48,4 +48,35 @@ describe King do
       end
     end
   end
+
+  describe '#move' do
+    context 'D4 to E4 when no piece in E4' do
+      before do
+        allow(board).to receive(:empty?).and_return(true)
+      end
+
+      it 'will return true and update position' do
+        result = king.move('E4')
+        position = king.instance_variable_get(:@current_position)
+
+        expect(result).to be_truthy
+        expect(position).to eq('E4')
+      end
+    end
+
+    context 'D4 to E4 when an ally is in E4' do
+      before do
+        allow(board).to receive(:empty?).and_return(false)
+        allow(king).to receive(:opponent?).and_return(false)
+      end
+
+      it 'will return false and does not update position' do
+        result = king.move('E4')
+        position = king.instance_variable_get(:@current_position)
+
+        expect(result).to be_falsy
+        expect(position).to eq('D4')
+      end
+    end
+  end
 end
