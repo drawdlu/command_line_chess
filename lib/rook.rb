@@ -4,14 +4,6 @@ require_relative 'piece'
 
 # Controls rook movements
 class Rook < Piece
-  def move(position)
-    return false unless valid_move?(position)
-
-    @current_position = position
-
-    true
-  end
-
   def valid_move?(position)
     vertical_horizontal?(position) &&
       no_pieces_on_path?(position) &&
