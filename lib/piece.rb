@@ -26,10 +26,15 @@ class Piece
   end
 
   def get_direction(current_pos, move_to_pos)
+    return 0 if current_pos == move_to_pos
+
     current_pos < move_to_pos ? 1 : -1
   end
 
-  def no_pieces_in_direction?(position, x_direction, y_direction)
+  def no_pieces_on_path?(position)
+    x_direction = get_direction(@current_position[0], position[0])
+    y_direction = get_direction(@current_position[1], position[1])
+
     cur_position_copy = move_pos(@current_position, x_direction, y_direction)
 
     until cur_position_copy == position
@@ -39,5 +44,16 @@ class Piece
     end
 
     true
+  end
+
+  def diagonal?(position)
+    x_distance = (@current_position[0].ord - position[0].ord).abs
+    y_distance = (@current_position[1].ord - position[1].ord).abs
+
+    x_distance == y_distance
+  end
+
+  def vertical_horizontal?(position)
+    @current_position[0] == position[0] || @current_position[1] == position[1]
   end
 end
