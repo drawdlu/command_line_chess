@@ -10,4 +10,8 @@ class Knight < Piece
     valid_distances.include?([x_distance, y_distance]) &&
       (@board.empty?(position) || opponent?(position))
   end
+
+  def to_s
+    color == :white ? '♞ ' : '♘ '
+  end
 end

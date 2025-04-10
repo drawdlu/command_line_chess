@@ -9,4 +9,8 @@ class Bishop < Piece
       no_pieces_on_path?(position) &&
       (@board.empty?(position) || opponent?(position))
   end
+
+  def to_s
+    color == :white ? '♝ ' : '♗ '
+  end
 end

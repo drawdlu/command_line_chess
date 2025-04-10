@@ -21,4 +21,22 @@ describe Board do
       end
     end
   end
+
+  describe '#get_positions' do
+    context 'when white is passed in' do
+      it 'will return positions A1-H1' do
+        result = board.send(:get_positions, :white)
+        expected_result = %w[A1 B1 C1 D1 E1 F1 G1 H1]
+        expect(result).to eq(expected_result)
+      end
+    end
+
+    context 'when white is passed in' do
+      it 'will return positions A8-H8' do
+        result = board.send(:get_positions, :black)
+        expected_result = %w[A8 B8 C8 D8 E8 F8 G8 H8]
+        expect(result).to eq(expected_result)
+      end
+    end
+  end
 end

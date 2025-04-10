@@ -12,4 +12,8 @@ class King < Piece
 
     x_distance <= 1 && y_distance <= 1
   end
+
+  def to_s
+    color == :white ? '♚ ' : '♔ '
+  end
 end
