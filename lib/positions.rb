@@ -15,6 +15,6 @@ module Positions
   end
 
   def square_name(x_index, y_index)
-    LETTER_POSITIONS[x_index] + (8 - y_index).to_s
+    LETTER_POSITIONS[y_index] + (8 - x_index).to_s
   end
 end
