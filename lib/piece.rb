@@ -64,4 +64,8 @@ class Piece
 
     true
   end
+
+  def empty_or_opponent?(position)
+    @board.empty?(position) || opponent?(position)
+  end
 end

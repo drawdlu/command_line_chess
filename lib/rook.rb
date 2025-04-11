@@ -7,7 +7,7 @@ class Rook < Piece
   def valid_move?(position)
     vertical_horizontal?(position) &&
       no_pieces_on_path?(position) &&
-      (@board.empty?(position) || opponent?(position))
+      empty_or_opponent?(position)
   end
 
   def to_s

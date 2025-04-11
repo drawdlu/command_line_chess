@@ -8,7 +8,7 @@ class Knight < Piece
     valid_distances = [[1, 2], [2, 1]]
 
     valid_distances.include?([x_distance, y_distance]) &&
-      (@board.empty?(position) || opponent?(position))
+      empty_or_opponent?(position)
   end
 
   def to_s

@@ -2,8 +2,7 @@ require_relative 'piece'
 
 class King < Piece
   def valid_move?(position)
-    one_square_distance?(position) &&
-      (@board.empty?(position) || opponent?(position))
+    one_square_distance?(position) && empty_or_opponent?(position)
   end
 
   def one_square_distance?(position)
