@@ -63,31 +63,4 @@ describe Knight do
       end
     end
   end
-
-  describe '#move' do
-    context 'when D4 to F5' do
-      before do
-        allow(board).to receive(:empty?).and_return(true)
-      end
-      it 'will return true and update position' do
-        result = knight.move('F5')
-        position = knight.instance_variable_get(:@current_position)
-        expect(result).to be_truthy
-        expect(position).to eq('F5')
-      end
-    end
-
-    context 'when D4 to F5, and an ally is in F5' do
-      before do
-        allow(board).to receive(:empty?).and_return(false)
-        allow(knight).to receive(:opponent?).and_return(false)
-      end
-      it 'will return true and update position' do
-        result = knight.move('F5')
-        position = knight.instance_variable_get(:@current_position)
-        expect(result).to be_falsy
-        expect(position).to eq('D4')
-      end
-    end
-  end
 end

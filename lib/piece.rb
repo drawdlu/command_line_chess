@@ -14,12 +14,8 @@ class Piece
     @board = board
   end
 
-  def move(position)
-    return false unless valid_move?(position)
-
+  def move_to(position)
     @current_position = position
-
-    true
   end
 
   private
