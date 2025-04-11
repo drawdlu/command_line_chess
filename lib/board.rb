@@ -22,11 +22,14 @@ class Board
   end
 
   def to_s
+    board = ''
     @board.each_with_index do |row, x_index|
-      print_line
-      print_row(row, x_index)
+      board += line
+      board += row(row, x_index)
     end
-    print_line
+    board += line
+
+    board
   end
 
   def empty?(position)
@@ -62,9 +65,9 @@ class Board
     pieces = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
     line = []
 
-    pieces.each_with_index do |_class, index|
+    pieces.each_with_index do |piece_class, index|
       position = LETTER_POSITIONS[index] + row_num
-      piece = _class.new(color, position, self)
+      piece = piece_class.new(color, position, self)
       color == :white ? white_pieces.push(piece) : black_pieces.push(piece)
       line.push(piece)
     end
@@ -72,31 +75,24 @@ class Board
     line
   end
 
-  def print_row(row, y_index)
-    print_space
+  def row(row, y_index)
+    row_string = space
     row.each_with_index do |val, x_index|
-      print '|  '
-      if val.nil?
-        print square_name(x_index, y_index)
-      else
-        print val
-      end
-      print ' '
+      row_string += if val.nil?
+                      "|  #{square_name(x_index, y_index)} "
+                    else
+                      "|  #{val} "
+                    end
     end
-    print '|'
-    puts
+
+    "#{row_string}|\n"
   end
 
-  def print_line
-    print_space
-    puts '-------------------------------------------------'
+  def line
+    "#{space}-------------------------------------------------\n"
   end
 
-  def print_space
-    print '                '
+  def space
+    '                '
   end
 end
-
-test = Board.new
-
-puts test
