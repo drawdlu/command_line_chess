@@ -45,15 +45,13 @@ class Board
 
   def pawn_line(color)
     line = []
-    position = color == :white ? 'A2' : 'A7'
+    number = color == :white ? '2' : '7'
 
-    BOARD_SIZE.times do |num|
+    (0..(BOARD_SIZE - 1)).each do |index|
+      position = LETTER_POSITIONS[index] + number
       pawn = Pawn.new(color, position, self)
       color == :white ? white_pieces.push(pawn) : black_pieces.push(pawn)
       line.push(pawn)
-      if num < BOARD_SIZE - 1 # rubocop:disable Style/IfUnlessModifier
-        position = LETTER_POSITIONS[(position[0].ord + 1) - 'A'.ord] + position[1]
-      end
     end
 
     line
@@ -98,3 +96,7 @@ class Board
     print '                '
   end
 end
+
+test = Board.new
+
+puts test
