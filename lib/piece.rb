@@ -14,6 +14,16 @@ class Piece
     @board = board
   end
 
+  def move(position)
+    return false unless valid_move?(position)
+
+    @current_position = position
+
+    true
+  end
+
+  private
+
   def opponent?(position)
     index = get_name_index(position)
 
@@ -57,15 +67,11 @@ class Piece
     @current_position[0] == position[0] || @current_position[1] == position[1]
   end
 
-  def move(position)
-    return false unless valid_move?(position)
-
-    @current_position = position
-
-    true
-  end
-
   def empty_or_opponent?(position)
     @board.empty?(position) || opponent?(position)
+  end
+
+  def get_distance(a_index, b_index)
+    (a_index.ord - b_index.ord).abs
   end
 end

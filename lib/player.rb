@@ -7,6 +7,8 @@ class Player
     @color = color
   end
 
+  private
+
   def get_name(color)
     name = ''
 

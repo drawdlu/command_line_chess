@@ -9,21 +9,21 @@ describe Piece do
   describe '#move_pos' do
     context 'when A5 is passed and 0, 1 as direction' do
       it 'will return A6' do
-        result = piece.move_pos('A5', 0, 1)
+        result = piece.send(:move_pos, 'A5', 0, 1)
         expect(result).to eq('A6')
       end
     end
 
     context 'when A5 is passed and 0, -1 as direction' do
       it 'will return A4' do
-        result = piece.move_pos('A5', 0, -1)
+        result = piece.send(:move_pos, 'A5', 0, -1)
         expect(result).to eq('A4')
       end
     end
 
     context 'when A5 is passed and 2, -1 as direction' do
       it 'will return C4' do
-        result = piece.move_pos('A5', 2, -1)
+        result = piece.send(:move_pos, 'A5', 2, -1)
         expect(result).to eq('C4')
       end
     end
@@ -37,14 +37,14 @@ describe Piece do
       end
 
       it 'returns True' do
-        result = piece.no_pieces_on_path?('D6')
+        result = piece.send(:no_pieces_on_path?, 'D6')
         expect(result).to be_truthy
       end
     end
 
     context 'D3 to D4' do
       it 'returns True' do
-        result = piece.no_pieces_on_path?('D4')
+        result = piece.send(:no_pieces_on_path?, 'D4')
         expect(result).to be_truthy
       end
     end
@@ -54,7 +54,7 @@ describe Piece do
         allow(board).to receive(:empty?).with('C3').and_return(false)
       end
       it 'returns False' do
-        result = piece.no_pieces_on_path?('B3')
+        result = piece.send(:no_pieces_on_path?, 'B3')
         expect(result).to be_falsy
       end
     end
@@ -64,7 +64,7 @@ describe Piece do
         allow(board).to receive(:empty?).exactly(3).times.and_return(true, true, false)
       end
       it 'returns False' do
-        result = piece.no_pieces_on_path?('D7')
+        result = piece.send(:no_pieces_on_path?, 'D7')
         expect(result).to be_falsy
       end
     end
