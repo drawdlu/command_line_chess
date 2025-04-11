@@ -56,29 +56,16 @@ class Board
   end
 
   def major_minor_pieces(color)
-    positions = get_positions(color)
-    back_line = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
+    row_num = color == :white ? '1' : '8'
+    pieces = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
     line = []
 
-    positions.each_with_index do |position, index|
-      line.push(back_line[index].new(color, position, self))
+    pieces.each_with_index do |piece, index|
+      position = LETTER_POSITIONS[index] + row_num
+      line.push(piece.new(color, position, self))
     end
 
     line
-  end
-
-  def get_positions(color)
-    cur_position = color == :white ? 'A1' : 'A8'
-    positions = []
-
-    BOARD_SIZE.times do |num|
-      positions.push(cur_position)
-      if num < BOARD_SIZE - 1 # rubocop:disable Style/IfUnlessModifier
-        cur_position = LETTER_POSITIONS[(cur_position[0].ord + 1) - 'A'.ord] + cur_position[1]
-      end
-    end
-
-    positions
   end
 
   def print_row(row, y_index)
@@ -105,7 +92,3 @@ class Board
     print '                '
   end
 end
-
-test = Board.new
-
-puts test
