@@ -41,15 +41,22 @@ class Board
     initial_index = get_name_index(initial_position)
     new_index = get_name_index(position)
 
-    nil_and_move(initial_index, new_index)
+    move_piece(initial_index, new_index)
   end
 
   private
 
-  def nil_and_move(initial_index, new_index)
-    piece = board[initial_index[:x]][initial_index[:y]]
+  def move_piece(initial_index, new_index)
+    destination_value = board[new_index[:x]][new_index[:y]]
+    piece_to_move = board[initial_index[:x]][initial_index[:y]]
+    board[new_index[:x]][new_index[:y]] = piece_to_move
     board[initial_index[:x]][initial_index[:y]] = nil
-    board[new_index[:x]][new_index[:y]] = piece
+
+    remove_piece(destination_value) unless destination_value.nil?
+  end
+
+  def remove_piece(piece)
+    piece.color == :white ? white_pieces.delete(piece) : black_pieces.delete(piece)
   end
 
   def populate_board

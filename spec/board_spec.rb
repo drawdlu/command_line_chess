@@ -24,20 +24,50 @@ describe Board do
 
   describe '#move_to' do
     context 'A2 to A4' do
-      it 'moves A2 pawn to A4 and sets A2 to nil' do
+      it 'moves A2 pawn to A4, sets A2 to nil, and does not update opponent list' do
         piece = board.board[6][0]
         board.move_to('A2', 'A4')
+        piece_num = board.black_pieces.length
         expect(board.board[6][0]).to be_nil
         expect(board.board[4][0]).to eq(piece)
+        expect(piece_num).to eq(16)
       end
     end
 
     context 'B1 to C3' do
-      it 'moves B1 knight to C3 and sets B1 to nil' do
+      it 'moves B1 knight to C3, sets B1 to nil, and does not update opponent list' do
         piece = board.board[7][1]
         board.move_to('B1', 'C3')
+        piece_num = board.black_pieces.length
         expect(board.board[7][1]).to be_nil
         expect(board.board[5][2]).to eq(piece)
+        expect(piece_num).to eq(16)
+      end
+    end
+
+    context 'B1 to C3 when a piece is in C3' do
+      it 'removes C3 opponent from list moves B1 knight to C3 and sets B1 to nil' do
+        board.board[5][2] = board.black_pieces[0]
+        piece = board.board[7][1]
+        piece_to_remove = board.board[5][2]
+        board.move_to('B1', 'C3')
+        result = board.black_pieces.include?(piece_to_remove)
+        expect(board.board[7][1]).to be_nil
+        expect(board.board[5][2]).to eq(piece)
+        expect(result).to be_falsy
+      end
+    end
+
+    context 'C1 to H6 when an opponent is in H6' do
+      it 'removes opponent H6 from list, moves C1 bishop to H6, and sets C1 to nil' do
+        board.board[2][7] = board.black_pieces[0]
+        piece = board.board[7][2]
+        piece_to_remove = board.board[2][7]
+        board.move_to('C1', 'H6')
+        result = board.black_pieces.include?(piece_to_remove)
+        expect(board.board[7][2]).to be_nil
+        expect(board.board[2][7]).to eq(piece)
+        expect(result).to be_falsy
       end
     end
   end
