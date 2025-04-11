@@ -12,10 +12,12 @@ require_relative '../lib/king'
 class Board
   include Positions
 
-  attr_reader :board
+  attr_reader :board, :black_pieces, :white_pieces
 
   def initialize
     @board = Array.new(8) { Array.new(8, nil) }
+    @black_pieces = []
+    @white_pieces = []
     populate_board
   end
 
@@ -46,7 +48,9 @@ class Board
     position = color == :white ? 'A2' : 'A7'
 
     BOARD_SIZE.times do |num|
-      line.push(Pawn.new(color, position, self))
+      pawn = Pawn.new(color, position, self)
+      color == :white ? white_pieces.push(pawn) : black_pieces.push(pawn)
+      line.push(pawn)
       if num < BOARD_SIZE - 1 # rubocop:disable Style/IfUnlessModifier
         position = LETTER_POSITIONS[(position[0].ord + 1) - 'A'.ord] + position[1]
       end
@@ -60,9 +64,11 @@ class Board
     pieces = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
     line = []
 
-    pieces.each_with_index do |piece, index|
+    pieces.each_with_index do |_class, index|
       position = LETTER_POSITIONS[index] + row_num
-      line.push(piece.new(color, position, self))
+      piece = _class.new(color, position, self)
+      color == :white ? white_pieces.push(piece) : black_pieces.push(piece)
+      line.push(piece)
     end
 
     line
