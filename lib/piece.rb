@@ -14,7 +14,7 @@ class Piece
     @board = board
   end
 
-  def move_to(position)
+  def update_position(position)
     @current_position = position
   end
 

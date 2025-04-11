@@ -69,4 +69,14 @@ describe Piece do
       end
     end
   end
+
+  describe '#update_position' do
+    context 'updates current_position instance var' do
+      it 'updates current_position of piece' do
+        piece.update_position('A8')
+        position = piece.instance_variable_get(:@current_position)
+        expect(position).to eq('A8')
+      end
+    end
+  end
 end
