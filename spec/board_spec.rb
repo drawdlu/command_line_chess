@@ -5,7 +5,7 @@ describe Board do
   describe '#empty' do
     context 'when spot is empty' do
       it 'will return true' do
-        result = board.empty?('A1')
+        result = board.empty?('A4')
         expect(result).to be_truthy
       end
     end
@@ -22,20 +22,22 @@ describe Board do
     end
   end
 
-  describe '#get_positions' do
-    context 'when white is passed in' do
-      it 'will return positions A1-H1' do
-        result = board.send(:get_positions, :white)
-        expected_result = %w[A1 B1 C1 D1 E1 F1 G1 H1]
-        expect(result).to eq(expected_result)
+  describe '#move_to' do
+    context 'A2 to A4' do
+      it 'moves A2 pawn to A4 and sets A2 to nil' do
+        piece = board.board[6][0]
+        board.move_to('A2', 'A4')
+        expect(board.board[6][0]).to be_nil
+        expect(board.board[4][0]).to eq(piece)
       end
     end
 
-    context 'when white is passed in' do
-      it 'will return positions A8-H8' do
-        result = board.send(:get_positions, :black)
-        expected_result = %w[A8 B8 C8 D8 E8 F8 G8 H8]
-        expect(result).to eq(expected_result)
+    context 'B1 to C3' do
+      it 'moves B1 knight to C3 and sets B1 to nil' do
+        piece = board.board[7][1]
+        board.move_to('B1', 'C3')
+        expect(board.board[7][1]).to be_nil
+        expect(board.board[5][2]).to eq(piece)
       end
     end
   end

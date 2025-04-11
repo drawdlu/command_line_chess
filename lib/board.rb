@@ -34,10 +34,23 @@ class Board
 
   def empty?(position)
     index = get_name_index(position)
-    @board[index[0]][index[1]].nil?
+    @board[index[:x]][index[:y]].nil?
+  end
+
+  def move_to(initial_position, position)
+    initial_index = get_name_index(initial_position)
+    new_index = get_name_index(position)
+
+    nil_and_move(initial_index, new_index)
   end
 
   private
+
+  def nil_and_move(initial_index, new_index)
+    piece = board[initial_index[:x]][initial_index[:y]]
+    board[initial_index[:x]][initial_index[:y]] = nil
+    board[new_index[:x]][new_index[:y]] = piece
+  end
 
   def populate_board
     @board[0] = major_minor_pieces(:black)

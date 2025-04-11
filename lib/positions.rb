@@ -9,9 +9,9 @@ module Positions
     letter = position[0]
     number = position[1]
 
-    x_index = letter.ord - 'A'.ord
-    y_index = 8 - number.to_i
-    [y_index, x_index]
+    y_index = letter.ord - 'A'.ord
+    x_index = 8 - number.to_i
+    { y: y_index, x: x_index }
   end
 
   def square_name(x_index, y_index)
