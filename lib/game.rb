@@ -47,12 +47,19 @@ class Game
       print 'PIECE: '
       move = gets.chomp.upcase
 
-      return move.upcase if valid_position?(move) &&
-                            !@board.empty?(move) &&
-                            ally?(move)
+      break if valid_start?(move)
 
       move = ''
     end
+
+    move.upcase
+  end
+
+  def valid_start?(position)
+    valid_position?(position) &&
+      !@board.empty?(position) &&
+      ally?(position) &&
+      !get_piece(position).all_valid_moves.empty?
   end
 
   def get_move_position(piece)
@@ -61,17 +68,12 @@ class Game
       print 'SQUARE to move to: '
       move = gets.chomp.upcase
 
-      return move if valid_position?(move) && piece.valid_move?(move)
+      break if valid_position?(move) && piece.valid_move?(move)
 
       move = ''
     end
-  end
 
-  def valid_position?(position)
-    valid_positions = /[A-Ha-h][1-8]/
-    vool = valid_positions.match?(position) # rubocop:disable Style/RedundantAssignment
-
-    vool
+    move.upcase
   end
 
   def ally?(position)
