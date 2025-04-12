@@ -9,6 +9,8 @@ class Game
     @last_move = { from: nil, to: nil, piece: nil }
   end
 
+  private
+
   def valid_position?(position)
     valid_positions = /[A-Ha-h][1-8]/
     valid_positions.match?(position)
