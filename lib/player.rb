@@ -2,6 +2,8 @@
 
 # Handles player name and color
 class Player
+  attr_reader :color, :name
+
   def initialize(color)
     @name = get_name(color)
     @color = color

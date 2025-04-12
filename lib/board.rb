@@ -100,9 +100,9 @@ class Board
     line
   end
 
-  def row(row, y_index)
+  def row(row, x_index)
     row_string = space
-    row.each_with_index do |val, x_index|
+    row.each_with_index do |val, y_index|
       row_string += if val.nil?
                       "|  #{square_name(x_index, y_index)} "
                     else
