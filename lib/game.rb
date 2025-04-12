@@ -6,6 +6,7 @@ require_relative '../lib/board'
 class Game
   def initialize
     @board = Board.new
+    @last_move = { from: nil, to: nil, piece: nil }
   end
 
   def valid_position?(position)
@@ -25,5 +26,9 @@ class Game
     else
       @board.black_pieces.delete(piece)
     end
+  end
+
+  def update_last_move(from, to, piece)
+    @last_move = { from: from, to: to, piece: piece }
   end
 end
