@@ -89,7 +89,7 @@ describe Rook do
       end
     end
 
-    context 'when A2 is empty and ally in A3' do
+    context 'when A2 is empty and opponent in A3' do
       let(:opponent) { Rook.new(:black, 'A3', board) }
 
       it 'returns Set[A2, A3]' do
