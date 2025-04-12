@@ -114,4 +114,17 @@ class Piece
 
     x_index < BOARD_SIZE && x_index >= 0 && y_index < BOARD_SIZE && y_index >= 0
   end
+
+  def possible_moves(directions)
+    moves = Set[]
+    directions.each do |index|
+      next unless within_board?(@current_position, index[0], index[1])
+
+      move = move_pos(@current_position, index[0], index[1])
+
+      moves.add(move) if empty_or_opponent?(move)
+    end
+
+    moves
+  end
 end

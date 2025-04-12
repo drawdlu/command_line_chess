@@ -1,12 +1,18 @@
 require_relative 'piece'
 
 class Knight < Piece
+  KNIGHT_MOVES = [1, -1, 2, -2].permutation(2).filter { |pair| pair[0].abs != pair[1].abs }
+
   def valid_move?(position)
     valid_distance?(position) && empty_or_opponent?(position)
   end
 
   def to_s
     color == :white ? '♞ ' : '♘ '
+  end
+
+  def all_valid_moves
+    possible_moves(KNIGHT_MOVES)
   end
 
   private
