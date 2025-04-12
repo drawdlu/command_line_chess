@@ -15,8 +15,6 @@ class Pawn < Piece
     color == :white ? '♟ ' : '♙ '
   end
 
-  private
-
   def all_valid_moves
     # white goes up vertically in the 2d array and black goes the opposite way
     # forward movement along y_index
@@ -29,6 +27,8 @@ class Pawn < Piece
 
     (forward + diagonal_moves + double).to_set
   end
+
+  private
 
   def get_forward_move(x_index, y_index, direction)
     forward = square_name(x_index + direction, y_index)

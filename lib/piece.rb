@@ -8,6 +8,10 @@ class Piece
 
   attr_reader :color
 
+  HORIZONTAL_VERTICAL = [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }].freeze
+
+  DIAGONAL = [{ x: 1, y: 1 }, { x: -1, y: -1 }, { x: 1, y: -1 }, { x: -1, y: 1 }].freeze
+
   def initialize(color, current_position, board)
     @color = color
     @current_position = current_position
@@ -27,8 +31,11 @@ class Piece
   end
 
   def move_pos(position, x_direction, y_direction)
-    LETTER_POSITIONS[(position[0].ord - 'A'.ord + x_direction)] +
-      (position[1].to_i + y_direction).to_s
+    index = get_name_index(position)
+    x_index = index[:x] + x_direction
+    y_index = index[:y] + y_direction
+
+    square_name(x_index, y_index)
   end
 
   def get_direction(current_pos, move_to_pos)
@@ -38,8 +45,8 @@ class Piece
   end
 
   def no_pieces_on_path?(position)
-    x_direction = get_direction(@current_position[0], position[0])
-    y_direction = get_direction(@current_position[1], position[1])
+    y_direction = get_direction(@current_position[0], position[0])
+    x_direction = get_direction(@current_position[1], position[1])
 
     cur_position_copy = move_pos(@current_position, x_direction, y_direction)
 
@@ -69,5 +76,35 @@ class Piece
 
   def get_distance(a_index, b_index)
     (a_index.ord - b_index.ord).abs
+  end
+
+  def directional_moves(directions)
+    moves = Set[]
+
+    directions.each do |direction|
+      position = @current_position
+
+      while within_board?(position, direction[:x], direction[:y])
+        position = move_pos(position, direction[:x], direction[:y])
+
+        if @board.empty?(position)
+          moves.add(position)
+        else
+          moves.add(position) if opponent?(position)
+          break
+        end
+      end
+    end
+
+    moves
+  end
+
+  def within_board?(position, x_direction, y_direction)
+    index = get_name_index(position)
+
+    x_index = index[:x] + x_direction
+    y_index = index[:y] + y_direction
+
+    x_index < BOARD_SIZE && x_index >= 0 && y_index < BOARD_SIZE && y_index >= 0
   end
 end

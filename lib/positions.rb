@@ -17,4 +17,9 @@ module Positions
   def square_name(x_index, y_index)
     LETTER_POSITIONS[y_index] + (8 - x_index).to_s
   end
+
+  def valid_position?(position)
+    valid_positions = /[A-Ha-h][1-8]/
+    valid_positions.match?(position)
+  end
 end
