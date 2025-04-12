@@ -16,8 +16,8 @@ class Board
 
   def initialize
     @board = Array.new(8) { Array.new(8, nil) }
-    @black_pieces = []
-    @white_pieces = []
+    @black_pieces = Set[]
+    @white_pieces = Set[]
     populate_board
   end
 
@@ -73,7 +73,7 @@ class Board
     (0..(BOARD_SIZE - 1)).each do |index|
       position = LETTER_POSITIONS[index] + number
       pawn = Pawn.new(color, position, self)
-      color == :white ? white_pieces.push(pawn) : black_pieces.push(pawn)
+      color == :white ? white_pieces.add(pawn) : black_pieces.add(pawn)
       line.push(pawn)
     end
 
@@ -88,7 +88,7 @@ class Board
     pieces.each_with_index do |piece_class, index|
       position = LETTER_POSITIONS[index] + row_num
       piece = piece_class.new(color, position, self)
-      color == :white ? white_pieces.push(piece) : black_pieces.push(piece)
+      color == :white ? white_pieces.add(piece) : black_pieces.add(piece)
       line.push(piece)
     end
 

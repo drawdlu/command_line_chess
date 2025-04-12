@@ -22,7 +22,7 @@ class Piece
 
   def opponent?(position)
     index = get_name_index(position)
-    puts index
+
     @board.board[index[:x]][index[:y]].color != @color
   end
 
