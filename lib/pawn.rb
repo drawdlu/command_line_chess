@@ -27,20 +27,20 @@ class Pawn < Piece
     diagonal_moves = get_diagonal_moves(current_index[:x], current_index[:y], direction)
     double = get_double_move(current_index[:x], current_index[:y], direction)
 
-    forward + diagonal_moves + double
+    (forward + diagonal_moves + double).to_set
   end
 
   def get_forward_move(x_index, y_index, direction)
     forward = square_name(x_index + direction, y_index)
 
-    @board.empty?(forward) ? [forward] : []
+    @board.empty?(forward) ? Set[forward] : Set[]
   end
 
   def get_diagonal_moves(x_index, y_index, direction)
-    diagonal_moves = []
-    diagonal_moves.push(square_name(x_index + direction, y_index + 1)) unless (y_index + 1) == BOARD_SIZE
-    diagonal_moves.push(square_name(x_index + direction, y_index - 1)) unless (y_index - 1).negative?
-    valid_diagonal_moves = []
+    diagonal_moves = Set[]
+    diagonal_moves.add(square_name(x_index + direction, y_index + 1)) unless (y_index + 1) == BOARD_SIZE
+    diagonal_moves.add(square_name(x_index + direction, y_index - 1)) unless (y_index - 1).negative?
+    valid_diagonal_moves = Set[]
 
     diagonal_moves.each do |move|
       next if @board.empty?(move)
@@ -56,7 +56,7 @@ class Pawn < Piece
 
     double = double_move(x_index, y_index, direction, first_position)
 
-    valid_double?(double, forward) ? [double] : []
+    valid_double?(double, forward) ? Set[double] : Set[]
   end
 
   def valid_double?(double, forward)
