@@ -18,7 +18,6 @@ class Board
     @board = Array.new(8) { Array.new(8, nil) }
     @black_pieces = Set[]
     @white_pieces = Set[]
-    @last_move = { from: nil, to: nil, piece: nil }
     populate_board
   end
 
