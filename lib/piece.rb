@@ -38,10 +38,17 @@ class Piece
     square_name(x_index, y_index)
   end
 
+  # a letter moves along the axis of its index
+  # a number moves opposite the axis of its index
   def get_direction(current_pos, move_to_pos)
     return 0 if current_pos == move_to_pos
 
-    current_pos < move_to_pos ? 1 : -1
+    letter = /[A-H]/
+    if letter.match(current_pos)
+      current_pos < move_to_pos ? 1 : -1
+    else
+      current_pos < move_to_pos ? -1 : 1
+    end
   end
 
   def no_pieces_on_path?(position)
