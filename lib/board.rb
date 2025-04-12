@@ -18,6 +18,7 @@ class Board
     @board = Array.new(8) { Array.new(8, nil) }
     @black_pieces = Set[]
     @white_pieces = Set[]
+    @last_move = { from: nil, to: nil, piece: nil }
     populate_board
   end
 
@@ -42,6 +43,10 @@ class Board
     new_index = get_name_index(position)
 
     move_piece(initial_index, new_index)
+  end
+
+  def update_last_move(from, to, piece)
+    @last_move = { from: from, to: to, piece: piece }
   end
 
   private
