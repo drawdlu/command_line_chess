@@ -22,8 +22,8 @@ class Piece
 
   def opponent?(position)
     index = get_name_index(position)
-
-    @board.board[index[0]][index[1]].color != @color
+    puts index
+    @board.board[index[:x]][index[:y]].color != @color
   end
 
   def move_pos(position, x_direction, y_direction)
