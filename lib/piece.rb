@@ -6,7 +6,7 @@ require_relative 'positions'
 class Piece
   include Positions
 
-  attr_reader :color
+  attr_reader :color, :valid_moves
 
   HORIZONTAL_VERTICAL = [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }].freeze
 
@@ -16,10 +16,15 @@ class Piece
     @color = color
     @current_position = current_position
     @board = board
+    @valid_moves = Set[]
   end
 
   def update_position(position)
     @current_position = position
+  end
+
+  def change_valid_moves
+    @valid_moves = all_valid_moves
   end
 
   private

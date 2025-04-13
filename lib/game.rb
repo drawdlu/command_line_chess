@@ -13,13 +13,16 @@ class Game
     @white = Player.new(:white)
     @black = Player.new(:black)
     @active_player = @white
+    @last_move = nil
   end
 
   def start
     loop do
+      update_valid_moves
       puts @board
       move = ask_for_move
       apply_move(move[:initial_pos], move[:final_pos])
+      @last_move = { from: move[:initial_pos], to: move[:final_pos] }
       update_active_player
     end
   end
@@ -75,7 +78,7 @@ class Game
     valid_position?(position) &&
       !@board.empty?(position) &&
       ally?(position) &&
-      !piece.all_valid_moves.empty?
+      !piece.valid_moves.empty?
   end
 
   def get_move_position(piece)
@@ -84,7 +87,7 @@ class Game
       print 'SQUARE to move to: '
       move = gets.chomp.upcase
 
-      break if valid_position?(move) && piece.valid_move?(move)
+      break if valid_position?(move) && piece.valid_moves.include?(move)
 
       move = ''
     end
@@ -106,5 +109,25 @@ class Game
     else
       @board.black_pieces.delete(piece)
     end
+  end
+
+  def update_valid_moves
+    update_moves_set(@board.black_pieces)
+    update_moves_set(@board.white_pieces)
+  end
+
+  def update_moves_set(set_pieces)
+    set_pieces.each do |piece|
+      if @last_move.nil?
+        piece.change_valid_moves
+      elsif includes_last_move(piece)
+        piece.change_valid_moves
+      end
+    end
+  end
+
+  def includes_move(piece)
+    piece.valid_moves.include?(@last_move[:from]) ||
+      piece.valid_moves.include?(@last_move[:to])
   end
 end
