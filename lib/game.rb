@@ -21,7 +21,6 @@ class Game
       puts @board
       move = ask_for_move
       apply_move(move[:initial_pos], move[:final_pos])
-      @board.update_last_move(move[:initial_pos], move[:final_pos], get_piece(move[:final_pos]))
       update_active_player
     end
   end
@@ -45,6 +44,7 @@ class Game
     piece = get_piece(initial_pos)
     @board.move_to(initial_pos, final_pos)
     piece.update_position(final_pos)
+    @board.update_last_move(initial_pos, final_pos, piece)
   end
 
   def prompt_player
@@ -99,16 +99,6 @@ class Game
     index = get_name_index(position)
 
     @board.board[index[:x]][index[:y]].color == @active_player.color
-  end
-
-  def remove_piece(piece)
-    return if piece.nil?
-
-    if piece.color == :white
-      @board.white_pieces.delete(piece)
-    else
-      @board.black_pieces.delete(piece)
-    end
   end
 
   def update_valid_moves
