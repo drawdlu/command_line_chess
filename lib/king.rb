@@ -3,10 +3,6 @@ require_relative 'piece'
 class King < Piece
   KING_MOVES = [1, -1, 0].repeated_permutation(2).to_set.delete([0, 0])
 
-  def valid_move?(position)
-    one_square_distance?(position) && empty_or_opponent?(position)
-  end
-
   def to_s
     color == :white ? '♚ ' : '♔ '
   end

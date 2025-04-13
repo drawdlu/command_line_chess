@@ -7,10 +7,6 @@ require_relative 'positions'
 class Pawn < Piece
   include Positions
 
-  def valid_move?(position)
-    all_valid_moves.include?(position)
-  end
-
   def to_s
     color == :white ? '♟ ' : '♙ '
   end
