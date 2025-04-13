@@ -33,6 +33,7 @@ class Game
   end
 
   def ask_for_move
+    prompt_player
     initial_pos = ask_start_position
     piece = get_piece(initial_pos)
     final_pos = get_move_position(piece)
