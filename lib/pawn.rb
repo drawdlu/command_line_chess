@@ -65,6 +65,14 @@ class Pawn < Piece
     nil
   end
 
+  def on_left_or_right?
+    opponent_position = @board.last_move[:to]
+    left = move_pos(@current_position, 0, -1)
+    right = move_pos(@current_position, 0, 1)
+
+    opponent_position == left || opponent_position == right
+  end
+
   def opponent_double_move?
     last_move = @board.last_move
     initial_num = @color == :white ? 7 : 2
