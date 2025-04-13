@@ -6,7 +6,7 @@ require_relative 'positions'
 class Piece
   include Positions
 
-  attr_reader :color, :valid_moves
+  attr_reader :color, :valid_moves, :current_position
 
   HORIZONTAL_VERTICAL = [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }].freeze
 
@@ -126,13 +126,19 @@ class Piece
   end
 
   def possible_moves(directions)
+    moves = all_moves(directions)
+
+    moves.delete_if { |move| !empty_or_opponent?(move) }
+  end
+
+  def all_moves(directions)
     moves = Set[]
     directions.each do |index|
       next unless within_board?(@current_position, index[0], index[1])
 
       move = move_pos(@current_position, index[0], index[1])
 
-      moves.add(move) if empty_or_opponent?(move)
+      moves.add(move)
     end
 
     moves
