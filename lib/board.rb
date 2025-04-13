@@ -42,6 +42,7 @@ class Board
     initial_index = get_name_index(initial_position)
     new_index = get_name_index(position)
 
+    handle_en_passant(initial_position, position)
     move_piece(initial_index, new_index)
   end
 
@@ -50,6 +51,46 @@ class Board
   end
 
   private
+
+  def handle_en_passant(initial_position, position)
+    return unless move_is_en_passant?(initial_position, position)
+
+    delete_piece(initial_position, position)
+  end
+
+  def delete_piece(initial_position, final_position)
+    piece = get_piece(initial_position, self)
+
+    back_position = get_back_position(piece, final_position)
+    back_piece = get_piece(back_position, self)
+
+    index = get_name_index(back_position)
+
+    board[index[:x]][index[:y]] = nil
+
+    remove_piece(back_piece)
+  end
+
+  def move_is_en_passant?(initial_position, position)
+    piece_to_move = get_piece(initial_position, self)
+
+    piece_to_move.instance_of?(Pawn) &&
+      empty?(position) &&
+      opponent_pawn_behind_final_position?(piece_to_move, position)
+  end
+
+  def opponent_pawn_behind_final_position?(piece, final_position)
+    back_position = get_back_position(piece, final_position)
+
+    piece.opponent?(back_position) unless empty?(back_position)
+  end
+
+  def get_back_position(piece, final_position)
+    color = piece.color
+    back_direction = color == :white ? 1 : -1
+
+    move_pos(final_position, back_direction, 0)
+  end
 
   def move_piece(initial_index, new_index)
     destination_value = board[new_index[:x]][new_index[:y]]

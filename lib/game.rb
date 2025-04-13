@@ -34,14 +34,14 @@ class Game
   def ask_for_move
     prompt_player
     initial_pos = ask_start_position
-    piece = get_piece(initial_pos)
+    piece = get_piece(initial_pos, @board)
     final_pos = get_move_position(piece)
 
     { final_pos: final_pos, initial_pos: initial_pos }
   end
 
   def apply_move(initial_pos, final_pos)
-    piece = get_piece(initial_pos)
+    piece = get_piece(initial_pos, @board)
     @board.move_to(initial_pos, final_pos)
     piece.update_position(final_pos)
     @board.update_last_move(initial_pos, final_pos, piece)
@@ -49,13 +49,6 @@ class Game
 
   def prompt_player
     puts "#{@active_player.name}'s turn to move"
-  end
-
-  def get_piece(position)
-    return nil if @board.empty?(position)
-
-    index = get_name_index(position)
-    @board.board[index[:x]][index[:y]]
   end
 
   def ask_start_position
@@ -73,7 +66,7 @@ class Game
   end
 
   def valid_start?(position)
-    piece = get_piece(position)
+    piece = get_piece(position, @board)
 
     valid_position?(position) &&
       !@board.empty?(position) &&
@@ -110,7 +103,7 @@ class Game
     set_pieces.each do |piece|
       if @board.last_move.nil?
         piece.change_valid_moves
-      elsif includes_last_move(piece)
+      elsif includes_last_move(piece) || piece.instance_of?(Pawn)
         piece.change_valid_moves
       end
     end

@@ -27,21 +27,13 @@ class Piece
     @valid_moves = all_valid_moves
   end
 
-  private
-
   def opponent?(position)
     index = get_name_index(position)
 
     @board.board[index[:x]][index[:y]].color != @color
   end
 
-  def move_pos(position, x_direction, y_direction)
-    index = get_name_index(position)
-    x_index = index[:x] + x_direction
-    y_index = index[:y] + y_direction
-
-    square_name(x_index, y_index)
-  end
+  private
 
   # a Letter moves along the axis of its index
   # a Number moves opposite the axis of its index
@@ -118,11 +110,6 @@ class Piece
     y_index = index[:y] + y_direction
 
     within_range?(x_index) && within_range?(y_index)
-  end
-
-  # range is 0-7 min max index of board
-  def within_range?(index)
-    index < BOARD_SIZE && index >= 0
   end
 
   def possible_moves(directions)

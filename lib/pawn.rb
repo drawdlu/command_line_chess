@@ -76,8 +76,9 @@ class Pawn < Piece
 
   def on_left_or_right?
     opponent_position = @board.last_move[:to]
-    left = move_pos(@current_position, 0, -1)
-    right = move_pos(@current_position, 0, 1)
+    index = get_name_index(@current_position)
+    left = within_range?(index[:y] - 1) ? move_pos(@current_position, 0, -1) : nil
+    right = within_range?(index[:y] + 1) ? move_pos(@current_position, 0, 1) : nil
 
     opponent_position == left || opponent_position == right
   end
