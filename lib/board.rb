@@ -12,12 +12,13 @@ require_relative '../lib/king'
 class Board
   include Positions
 
-  attr_reader :board, :black_pieces, :white_pieces
+  attr_reader :board, :black_pieces, :white_pieces, :last_move
 
   def initialize
     @board = Array.new(8) { Array.new(8, nil) }
     @black_pieces = Set[]
     @white_pieces = Set[]
+    @last_move = nil
     populate_board
   end
 

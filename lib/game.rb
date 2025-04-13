@@ -13,7 +13,6 @@ class Game
     @white = Player.new(:white)
     @black = Player.new(:black)
     @active_player = @white
-    @last_move = nil
   end
 
   def start
@@ -22,7 +21,7 @@ class Game
       puts @board
       move = ask_for_move
       apply_move(move[:initial_pos], move[:final_pos])
-      @last_move = { from: move[:initial_pos], to: move[:final_pos] }
+      @board.update_last_move(move[:initial_pos], move[:final_pos], get_piece(move[:final_pos]))
       update_active_player
     end
   end
@@ -118,7 +117,7 @@ class Game
 
   def update_moves_set(set_pieces)
     set_pieces.each do |piece|
-      if @last_move.nil?
+      if @board.last_move.nil?
         piece.change_valid_moves
       elsif includes_last_move(piece)
         piece.change_valid_moves
@@ -126,8 +125,8 @@ class Game
     end
   end
 
-  def includes_move(piece)
-    piece.valid_moves.include?(@last_move[:from]) ||
-      piece.valid_moves.include?(@last_move[:to])
+  def includes_last_move(piece)
+    piece.valid_moves.include?(@board.last_move[:from]) ||
+      piece.valid_moves.include?(@board.last_move[:to])
   end
 end
