@@ -75,4 +75,18 @@ describe Pawn do
       end
     end
   end
+
+  describe 'en_passant' do
+    context 'B5 when opponent double moves at A5' do
+      let(:opponent_pawn) { Pawn.new(:black, 'A5', board) }
+      before do
+        last_move = { from: 'A7', to: 'A5', piece: opponent_pawn }
+        allow(board).to receive(:last_move).and_return(last_move)
+      end
+      it 'will return Set[A6]' do
+        result = pawn.send(:en_passant)
+        expect(result).to eq(Set['A6'])
+      end
+    end
+  end
 end

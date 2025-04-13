@@ -21,7 +21,7 @@ class Pawn < Piece
     diagonal_moves = get_diagonal_moves(current_index[:x], current_index[:y], direction)
     double = get_double_move(current_index[:x], current_index[:y], direction)
 
-    (forward + diagonal_moves + double).to_set
+    forward + diagonal_moves + double + en_passant
   end
 
   private
@@ -63,6 +63,14 @@ class Pawn < Piece
     return square_name(x_index + (direction * 2), y_index) if first_position == x_index
 
     nil
+  end
+
+  def en_passant
+    return Set[] unless opponent_double_move? && on_left_or_right?
+
+    direction = @color == :white ? -1 : 1
+    opponent_position = @board.last_move[:to]
+    Set[move_pos(opponent_position, direction, 0)]
   end
 
   def on_left_or_right?
