@@ -66,10 +66,11 @@ class Pawn < Piece
   end
 
   def en_passant
-    return Set[] unless opponent_double_move? && on_left_or_right?
+    last_move = @board.last_move
+    return Set[] unless !last_move.nil? && opponent_double_move? && on_left_or_right?
 
     direction = @color == :white ? -1 : 1
-    opponent_position = @board.last_move[:to]
+    opponent_position = last_move[:to]
     Set[move_pos(opponent_position, direction, 0)]
   end
 
