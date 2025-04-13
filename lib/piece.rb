@@ -38,8 +38,8 @@ class Piece
     square_name(x_index, y_index)
   end
 
-  # a letter moves along the axis of its index
-  # a number moves opposite the axis of its index
+  # a Letter moves along the axis of its index
+  # a Number moves opposite the axis of its index
   def get_direction(current_pos, move_to_pos)
     return 0 if current_pos == move_to_pos
 
@@ -112,7 +112,12 @@ class Piece
     x_index = index[:x] + x_direction
     y_index = index[:y] + y_direction
 
-    x_index < BOARD_SIZE && x_index >= 0 && y_index < BOARD_SIZE && y_index >= 0
+    within_range?(x_index) && within_range?(y_index)
+  end
+
+  # range is 0-7 min max index of board
+  def within_range?(index)
+    index < BOARD_SIZE && index >= 0
   end
 
   def possible_moves(directions)
