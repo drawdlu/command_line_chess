@@ -64,4 +64,14 @@ class Pawn < Piece
 
     nil
   end
+
+  def opponent_double_move?
+    last_move = @board.last_move
+    initial_num = @color == :white ? 7 : 2
+    direction = @color == :white ? -2 : 2
+
+    last_move[:piece].instance_of?(Pawn) &&
+      last_move[:from][1].to_i == initial_num &&
+      last_move[:to][1].to_i == initial_num + direction
+  end
 end
