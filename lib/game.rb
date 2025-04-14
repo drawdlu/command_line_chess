@@ -17,7 +17,7 @@ class Game
 
   def start
     loop do
-      update_valid_moves
+      @board.update_valid_moves
       puts @board
       move = ask_for_move
       apply_move(move[:initial_pos], move[:final_pos])
@@ -92,26 +92,6 @@ class Game
     index = get_name_index(position)
 
     @board.board[index[:x]][index[:y]].color == @active_player.color
-  end
-
-  def update_valid_moves
-    update_moves_set(@board.black_pieces)
-    update_moves_set(@board.white_pieces)
-  end
-
-  def update_moves_set(set_pieces)
-    set_pieces.each do |piece|
-      if @board.last_move.nil?
-        piece.change_valid_moves
-      elsif includes_last_move(piece) || piece.instance_of?(Pawn)
-        piece.change_valid_moves
-      end
-    end
-  end
-
-  def includes_last_move(piece)
-    piece.valid_moves.include?(@board.last_move[:from]) ||
-      piece.valid_moves.include?(@board.last_move[:to])
   end
 
   def check?

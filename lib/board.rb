@@ -50,6 +50,11 @@ class Board
     @last_move = { from: from, to: to, piece: piece }
   end
 
+  def update_valid_moves
+    update_moves_set(@black_pieces)
+    update_moves_set(@white_pieces)
+  end
+
   private
 
   def handle_en_passant(initial_position, position)
@@ -157,5 +162,20 @@ class Board
 
   def space
     '                '
+  end
+
+  def update_moves_set(set_pieces)
+    set_pieces.each do |piece|
+      if @last_move.nil?
+        piece.change_valid_moves
+      elsif includes_last_move(piece) || piece.instance_of?(Pawn) || piece.valid_moves.empty?
+        piece.change_valid_moves
+      end
+    end
+  end
+
+  def includes_last_move(piece)
+    piece.valid_moves.include?(@last_move[:from]) ||
+      piece.valid_moves.include?(@last_move[:to])
   end
 end
