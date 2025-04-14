@@ -100,13 +100,7 @@ class Game
   end
 
   def check?
-    if @active_player.color == :white
-      ally_king = get_from_set(@board.white_pieces, King)
-      opponent_pieces = @board.black_pieces
-    else
-      ally_king = get_from_set(@board.black_pieces, King)
-      opponent_pieces = @board.white_pieces
-    end
+    ally_king = active_king
 
     opponent_pieces.each do |piece|
       return true if piece.valid_moves.include?(ally_king.current_position)
@@ -121,5 +115,21 @@ class Game
     end
 
     nil
+  end
+
+  def active_king
+    if @active_player.color == :white
+      get_from_set(@board.white_pieces, King)
+    else
+      get_from_set(@board.black_pieces, King)
+    end
+  end
+
+  def opponent_pieces
+    if @active_player.color == :white
+      @board.black_pieces
+    else
+      @board.white_pieces
+    end
   end
 end
