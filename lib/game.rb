@@ -19,6 +19,7 @@ class Game
     loop do
       @board.update_valid_moves
       puts @board
+      prompt_check if check?
       move = ask_for_move
       apply_move(move[:initial_pos], move[:final_pos])
       update_active_player
@@ -26,6 +27,10 @@ class Game
   end
 
   private
+
+  def prompt_check
+    print "You are in CHECK\n"
+  end
 
   def update_active_player
     @active_player = @active_player == @white ? @black : @white
