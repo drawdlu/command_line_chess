@@ -53,15 +53,14 @@ class Board
   private
 
   def handle_en_passant(initial_position, position)
-    return unless move_is_en_passant?(initial_position, position)
+    piece = get_piece(initial_position, self)
+    return unless move_is_en_passant?(position, piece)
 
-    delete_piece(initial_position, position)
+    delete_piece(position, piece)
   end
 
-  def delete_piece(initial_position, final_position)
-    piece = get_piece(initial_position, self)
-
-    back_position = get_back_position(piece, final_position)
+  def delete_piece(final_position, piece_to_move)
+    back_position = get_back_position(piece_to_move, final_position)
     back_piece = get_piece(back_position, self)
 
     index = get_name_index(back_position)
@@ -71,9 +70,7 @@ class Board
     remove_piece(back_piece)
   end
 
-  def move_is_en_passant?(initial_position, position)
-    piece_to_move = get_piece(initial_position, self)
-
+  def move_is_en_passant?(position, piece_to_move)
     piece_to_move.instance_of?(Pawn) &&
       empty?(position) &&
       opponent_pawn_behind_final_position?(piece_to_move, position)
