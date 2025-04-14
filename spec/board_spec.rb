@@ -90,4 +90,92 @@ describe Board do
       end
     end
   end
+
+  describe 'EN-PASSANT' do
+    let(:pawn) { Pawn.new(:white, 'B5', board) }
+    let(:opponent) { Pawn.new(:black, 'A5', board) }
+    let(:ally) { Pawn.new(:white, 'A5', board) }
+
+    # used for checking en passant, one condition is that final position is empty
+    describe '#opponent_pawn_behind_final_position?' do
+      context 'A5 is an opponent and final position is at A6' do
+        before do
+          new_board = board.instance_variable_get(:@board)
+          new_board[3][0] = opponent
+          board.instance_variable_set(:@new_board, new_board)
+        end
+
+        it 'returns True' do
+          final_position = 'A6'
+          result = board.send(:opponent_pawn_behind_final_position?, pawn, final_position)
+          expect(result).to be_truthy
+        end
+      end
+
+      context 'A5 is an ally and final position is at A6' do
+        before do
+          new_board = board.instance_variable_get(:@board)
+          new_board[3][0] = ally
+          board.instance_variable_set(:@new_board, new_board)
+        end
+
+        it 'returns False' do
+          final_position = 'A6'
+          result = board.send(:opponent_pawn_behind_final_position?, pawn, final_position)
+          expect(result).to be_falsy
+        end
+      end
+
+      context 'A5 is is empty and final position is at A6' do
+        it 'returns False' do
+          final_position = 'A6'
+          result = board.send(:opponent_pawn_behind_final_position?, pawn, final_position)
+          expect(result).to be_falsy
+        end
+      end
+    end
+
+    # NOTE: that allowing pawn to move en passant is handled in Pawn object
+    describe '#move_is_en_passant?' do
+      context 'when an opponent pawn is in A5 and pawn moves to A6' do
+        before do
+          new_board = board.instance_variable_get(:@board)
+          new_board[3][0] = opponent
+          board.instance_variable_set(:@new_board, new_board)
+        end
+
+        it 'returns True' do
+          final_position = 'A6'
+          result = board.send(:move_is_en_passant?, final_position, pawn)
+          expect(result).to be_truthy
+        end
+      end
+
+      context 'when A5 is empty and pawn moves to A6' do
+        it 'returns False' do
+          final_position = 'A6'
+          result = board.send(:move_is_en_passant?, final_position, pawn)
+          expect(result).to be_falsy
+        end
+      end
+    end
+
+    describe '#delete_piece' do
+      context 'when piece to be deleted is at A5' do
+        before do
+          new_board = board.instance_variable_get(:@board)
+          new_board[3][0] = opponent
+          board.instance_variable_set(:@new_board, new_board)
+        end
+
+        it 'deletes that piece from board and calls remove_piece' do
+          final_position = 'A6'
+          expect(board).to receive(:remove_piece)
+          board.send(:delete_piece, final_position, pawn)
+          value = board.board[3][0]
+          expect(value).to be_nil
+        end
+      end
+    end
+  end
 end
