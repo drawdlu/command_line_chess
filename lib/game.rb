@@ -113,4 +113,28 @@ class Game
     piece.valid_moves.include?(@board.last_move[:from]) ||
       piece.valid_moves.include?(@board.last_move[:to])
   end
+
+  def check?
+    if @active_player.color == :white
+      ally_king = get_from_set(@board.white_pieces, King)
+      opponent_pieces = @board.black_pieces
+    else
+      ally_king = get_from_set(@board.black_pieces, King)
+      opponent_pieces = @board.white_pieces
+    end
+
+    opponent_pieces.each do |piece|
+      return true if piece.valid_moves.include?(ally_king.current_position)
+    end
+
+    false
+  end
+
+  def get_from_set(set_pieces, piece_class)
+    set_pieces.each do |piece|
+      return piece if piece.instance_of?(piece_class)
+    end
+
+    nil
+  end
 end
