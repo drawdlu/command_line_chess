@@ -13,6 +13,7 @@ class Game
     @white = Player.new(:white)
     @black = Player.new(:black)
     @active_player = @white
+    @win_draw = nil
   end
 
   def start
@@ -20,10 +21,13 @@ class Game
       @board.update_valid_moves
       puts @board
       prompt_check if check?
+      break if win_draw_condition?
+
       move = ask_for_move
       apply_move(move[:initial_pos], move[:final_pos])
       update_active_player
     end
+    announce_outcome
   end
 
   private
@@ -101,8 +105,9 @@ class Game
 
   def check?
     ally_king = active_king
+    opponent_color = @active_player.color == :white ? :black : :white
 
-    opponent_pieces.each do |piece|
+    get_pieces(opponent_color).each do |piece|
       return true if piece.valid_moves.include?(ally_king.current_position)
     end
 
@@ -125,11 +130,64 @@ class Game
     end
   end
 
-  def opponent_pieces
-    if @active_player.color == :white
+  def get_pieces(color)
+    if color == :black
       @board.black_pieces
     else
       @board.white_pieces
     end
+  end
+
+  def announce_outcome
+    return unless @win_draw.nil?
+
+    puts 'Game reached STALEMATE'
+  end
+
+  def win_draw_condition?
+    stalemate?
+  end
+
+  def stalemate?
+    opponent_controls_king_moves? && no_more_moves?
+  end
+
+  def no_more_moves?
+    get_pieces(@active_player.color).each do |piece|
+      print "#{piece.class} #{piece.valid_moves} #{piece.current_position}"
+      return false if !piece.instance_of?(King) && !piece.valid_moves.empty?
+    end
+
+    true
+  end
+
+  def active_player_pieces
+    if @active_player.color == :white
+      @board.white_pieces
+    else
+      @board.black_pieces
+    end
+  end
+
+  def opponent_controls_king_moves?
+    king = active_king
+    return false if king.valid_moves.empty?
+
+    found = Set[]
+
+    king.valid_moves.each do |move|
+      get_pieces(opponent_color).each do |piece|
+        if piece.valid_moves.include?(move)
+          found.add(move)
+          break
+        end
+      end
+    end
+
+    found == king.valid_moves
+  end
+
+  def opponent_color
+    @active_player.color == :white ? :black : :white
   end
 end
