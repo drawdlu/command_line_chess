@@ -18,7 +18,7 @@ module Positions
     LETTER_POSITIONS[y_index] + (8 - x_index).to_s
   end
 
-  def get_piece(position, board)
+  def get_piece(position, board = self.board)
     return nil if board.empty?(position)
 
     index = get_name_index(position)
