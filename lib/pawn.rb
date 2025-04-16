@@ -2,6 +2,10 @@
 
 require_relative 'piece'
 require_relative 'positions'
+require_relative 'rook'
+require_relative 'queen'
+require_relative 'bishop'
+require_relative 'knight'
 
 # Controls movement and characteristics of a pawn in chess
 class Pawn < Piece
@@ -22,6 +26,12 @@ class Pawn < Piece
     double = get_double_move(current_index[:x], current_index[:y], direction)
 
     forward + diagonal_moves + double + en_passant
+  end
+
+  def update_position(position)
+    @current_position = position
+
+    promote if last_row?
   end
 
   private
@@ -91,5 +101,66 @@ class Pawn < Piece
     last_move[:piece].instance_of?(Pawn) &&
       last_move[:from][1].to_i == initial_num &&
       last_move[:to][1].to_i == initial_num + direction
+  end
+
+  def promote
+    piece_class = convert_to_class(prompt_for_promote_piece)
+    piece = create_piece_with_valid_moves(piece_class)
+    put_piece_on_board(piece)
+    remove_pawn_from_list
+  end
+
+  def last_row?
+    last_row = @color == :white ? '8' : '1'
+
+    @current_position[1] == last_row
+  end
+
+  def create_piece_with_valid_moves(piece)
+    new_piece = piece.new(@color, @current_position, @board)
+    new_piece.change_valid_moves
+    new_piece
+  end
+
+  def put_piece_on_board(piece)
+    index = get_name_index(piece.current_position)
+
+    @board.board[index[:x]][index[:y]] = piece
+    @color == :white ? @board.white_pieces.add(piece) : @board.black_pieces.add(piece)
+    remove_pawn_from_list
+  end
+
+  def remove_pawn_from_list
+    if @color == :white
+      @board.white_pieces.delete_if { |piece| piece == self }
+    else
+      @board.black_pieces.delete_if { |piece| piece == self }
+    end
+  end
+
+  def prompt_for_promote_piece
+    result = ''
+
+    choices = %w[KNIGHT ROOK BISHOP QUEEN]
+
+    until choices.join(' ').include?(result.upcase) && result != ''
+      print 'Enter promotion choice between '
+      choices.each do |piece|
+        print "#{piece} "
+      end
+      print ': '
+
+      result = gets.chomp
+    end
+
+    result.upcase
+  end
+
+  def convert_to_class(input)
+    promote_pieces = { 'KNIGHT' => Knight, 'QUEEN' => Queen, 'BISHOP' => Bishop, 'ROOK' => Rook }
+
+    promote_pieces.each_key do |key|
+      return promote_pieces[key] if key.include?(input)
+    end
   end
 end

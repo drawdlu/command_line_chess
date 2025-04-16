@@ -75,7 +75,7 @@ describe Game do
   end
 
   describe '#stalemate?' do
-    # $stdout = File.open(File::NULL, 'w')
+    $stdout = File.open(File::NULL, 'w')
     new_board = Board.new
     rook1 = Rook.new(:black, 'A2', new_board)
     queen = Queen.new(:black, 'D4', new_board)
