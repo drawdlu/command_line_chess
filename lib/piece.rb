@@ -130,4 +130,43 @@ class Piece
 
     moves
   end
+
+  def valid_castling_move?(position)
+    !@moved && no_pieces_on_path?(position) && !middle_opponent_controlled?(position)
+  end
+
+  def middle_opponent_controlled?(position)
+    opponent_pieces = @color == :white ? @board.black_pieces : @board.white_pieces
+
+    mid_squares(position).each do |square|
+      opponent_pieces.each do |piece|
+        return true if piece.valid_moves.include?(square)
+      end
+    end
+
+    false
+  end
+
+  def mid_squares(position)
+    moves = Set[]
+    direction = @current_position[0] > position[0] ? -1 : 1
+
+    cur_position = move_pos(@current_position, 0, direction)
+
+    until cur_position == position
+      moves.add(cur_position)
+
+      cur_position = move_pos(cur_position, 0, direction)
+    end
+
+    moves
+  end
+
+  def ally_of_class_has_not_moved?(position, piece_class)
+    return false if @board.empty?(position)
+
+    piece = get_piece(position, @board)
+
+    piece.instance_of?(piece_class) && !opponent?(position) && !piece.moved
+  end
 end
