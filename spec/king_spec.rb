@@ -35,4 +35,10 @@ describe King do
       end
     end
   end
+
+  describe '#castling' do
+    context 'when both king and both rook have not moved' do
+      it 'will return positions of Rooks'
+    end
+  end
 end
