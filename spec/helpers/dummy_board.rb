@@ -28,6 +28,12 @@ module Helpers
       board
     end
 
+    def insert_piece(piece)
+      insert_to_board(piece)
+      piece.change_valid_moves
+      update_pieces_list(piece)
+    end
+
     def update_all_valid_moves(board)
       update_each_valid_moves(board.white_pieces)
       update_each_valid_moves(board.black_pieces)
@@ -39,8 +45,12 @@ module Helpers
 
     def update_pieces_list(piece)
       board = piece.instance_variable_get(:@board)
-      pieces_list = piece.color == :white ? board.white_pieces : board.black_pieces
-      pieces_list.add(piece)
+
+      if piece.color == :white
+        board.white_pieces.add(piece)
+      else
+        board.black_pieces.add(piece)
+      end
     end
 
     def insert_to_board(piece)
@@ -60,10 +70,9 @@ module Helpers
     def create_board
       board = Board.new
       empty_board = Array.new(BOARD_SIZE) { Array.new(BOARD_SIZE, nil) }
-      empty_set = Set[]
       board.instance_variable_set(:@board, empty_board)
-      board.instance_variable_set(:@white_pieces, empty_set)
-      board.instance_variable_set(:@black_pieces, empty_set)
+      board.instance_variable_set(:@white_pieces, Set[])
+      board.instance_variable_set(:@black_pieces, Set[])
 
       board
     end

@@ -67,7 +67,9 @@ describe Helpers::DummyBoard do
         white_pieces_num = result.white_pieces.length
         piece1 = !result.board[7][0].nil?
         piece2 = !result.board[7][7].nil?
+        black_pieces_num = result.black_pieces.length
         expect(white_pieces_num).to eq(2)
+        expect(black_pieces_num).to eq(0)
         expect(piece1).to be_truthy
         expect(piece2).to be_truthy
       end
