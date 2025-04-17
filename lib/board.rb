@@ -165,13 +165,7 @@ class Board
   end
 
   def update_moves_set(set_pieces)
-    set_pieces.each do |piece|
-      if @last_move.nil?
-        piece.change_valid_moves
-      elsif includes_last_move(piece) || piece.instance_of?(Pawn) || piece.valid_moves.empty?
-        piece.change_valid_moves
-      end
-    end
+    set_pieces.each(&:change_valid_moves)
   end
 
   def includes_last_move(piece)
