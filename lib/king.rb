@@ -20,7 +20,7 @@ class King < Piece
   end
 
   def all_valid_moves
-    possible_moves(KING_MOVES)
+    possible_moves(KING_MOVES) + castling
   end
 
   def update_position(position)
