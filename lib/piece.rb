@@ -35,19 +35,6 @@ class Piece
 
   private
 
-  # a Letter moves along the axis of its index
-  # a Number moves opposite the axis of its index
-  def get_direction(current_pos, move_to_pos)
-    return 0 if current_pos == move_to_pos
-
-    letter = /[A-H]/
-    if letter.match(current_pos)
-      current_pos < move_to_pos ? 1 : -1
-    else
-      current_pos < move_to_pos ? -1 : 1
-    end
-  end
-
   def no_pieces_on_path?(position)
     y_direction = get_direction(@current_position[0], position[0])
     x_direction = get_direction(@current_position[1], position[1])

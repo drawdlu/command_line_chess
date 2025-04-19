@@ -19,6 +19,7 @@ module Helpers
 
       pieces.each do |piece|
         new_piece = piece[:class].new(piece[:color], piece[:position], board)
+        new_piece.instance_variable_set(:@moved, piece[:moved]) if piece.key?(:moved)
         insert_to_board(new_piece)
         update_pieces_list(new_piece)
       end

@@ -16,7 +16,7 @@ class Game
     @black = Player.new(:black)
     @active_player = @white
     @win_draw = nil
-    @opponent_pieces_in_check = 0
+    @opponent_pieces_in_check = []
   end
 
   def start
@@ -94,10 +94,43 @@ class Game
   def valid_start?(position)
     piece = get_piece(position, @board)
 
-    valid_position?(position) &&
-      !@board.empty?(position) &&
-      ally?(position) &&
-      !piece.valid_moves.empty?
+    valid = valid_position?(position) &&
+            !@board.empty?(position) &&
+            ally?(position) &&
+            !piece.valid_moves.empty?
+
+    check_num = @opponent_pieces_in_check.length
+    if check_num.positive? && valid
+      return ally_king.current_position == position if check_num > 1
+
+      valid = initial_could_remove_check?(position)
+    end
+
+    valid
+  end
+
+  def initial_could_remove_check?(position)
+    piece = get_piece(position, @board)
+
+    if active_king == piece
+      !opponent_controls_king_moves?
+    else
+      ally_contains_protect_king(piece)
+    end
+  end
+
+  def ally_contains_protect_king(piece)
+    opponent_position = @opponent_pieces_in_check[0].current_position
+    piece.valid_moves.include?(square_to_protect_king) ||
+      piece.valid_moves.include?(opponent_position)
+  end
+
+  def square_to_protect_king
+    king_position = active_king.current_position
+    opponent_position = @opponent_pieces_in_check[0].current_position
+    x_direction = get_direction(king_position[1], opponent_position[1])
+    y_direction = get_direction(king_position[0], opponent_position[0])
+    move_pos(king_position, x_direction, y_direction)
   end
 
   def get_move_position(piece)
@@ -122,16 +155,16 @@ class Game
 
   def check?
     update_opponent_pieces_in_check
-    @opponent_pieces_in_check.positive?
+    @opponent_pieces_in_check.length.positive?
   end
 
   def update_opponent_pieces_in_check
-    check = 0
+    check = []
     ally_king = active_king
     opponent_color = @active_player.color == :white ? :black : :white
 
     get_pieces(opponent_color).each do |piece|
-      check += 1 if piece.valid_moves.include?(ally_king.current_position)
+      check.push(piece) if piece.valid_moves.include?(ally_king.current_position)
     end
 
     @opponent_pieces_in_check = check

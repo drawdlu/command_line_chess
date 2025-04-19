@@ -7,6 +7,7 @@ require_relative '../lib/queen'
 require_relative '../lib/pawn'
 
 describe Game do
+  $stdout = File.open(File::NULL, 'w')
   subject(:game) { described_class.new }
   describe '#valid_position?' do
     context 'when A8 is entered' do
@@ -75,7 +76,6 @@ describe Game do
   end
 
   describe '#stalemate?' do
-    $stdout = File.open(File::NULL, 'w')
     new_board = Board.new
     rook1 = Rook.new(:black, 'A2', new_board)
     queen = Queen.new(:black, 'D4', new_board)
@@ -136,6 +136,78 @@ describe Game do
 
       it 'returns False' do
         result = game.send(:stalemate?)
+        expect(result).to be_falsy
+      end
+    end
+  end
+
+  describe '#valid_start?' do
+    let(:pieces) do
+      [{ color: :white, position: 'E1', class: King },
+       { color: :white, position: 'H2', class: Rook, moved: true },
+       { color: :white, position: 'A6', class: Rook, moved: true },
+       { color: :white, position: 'B4', class: Queen },
+       { color: :black, position: 'E6', class: Rook, moved: true }]
+    end
+    let(:board) { create_dummy(pieces) }
+    let(:king_position) { 'E1' }
+    let(:protect_rook) { 'H2' }
+    let(:eat_rook) { 'A6' }
+    let(:queen) { 'B4' }
+    let(:active_player) { Player.new(:white) }
+
+    context 'when in check moving King' do
+      before do
+        opponent = board.board[2][4]
+        game.instance_variable_set(:@board, board)
+        game.instance_variable_set(:@opponent_pieces_in_check, [opponent])
+        game.instance_variable_set(:@active_player, active_player)
+      end
+
+      it 'will accept King position when it has a move not controlled by opponent' do
+        result = game.send(:valid_start?, king_position)
+        expect(result).to be_truthy
+      end
+    end
+
+    context 'when in check moving Rook to protect' do
+      before do
+        opponent = board.board[2][4]
+        game.instance_variable_set(:@board, board)
+        game.instance_variable_set(:@opponent_pieces_in_check, [opponent])
+        game.instance_variable_set(:@active_player, active_player)
+      end
+
+      it 'will accept Rook given that it can protect King' do
+        result = game.send(:valid_start?, protect_rook)
+        expect(result).to be_truthy
+      end
+    end
+
+    context 'when in check moving Rook to eat Piece' do
+      before do
+        opponent = board.board[2][4]
+        game.instance_variable_set(:@board, board)
+        game.instance_variable_set(:@opponent_pieces_in_check, [opponent])
+        game.instance_variable_set(:@active_player, active_player)
+      end
+
+      it 'will accept Rook position given that it can take opponent that has check on King' do
+        result = game.send(:valid_start?, eat_rook)
+        expect(result).to be_truthy
+      end
+    end
+
+    context 'when in check moving Queen that cant remove check' do
+      before do
+        opponent = board.board[2][4]
+        game.instance_variable_set(:@board, board)
+        game.instance_variable_set(:@opponent_pieces_in_check, [opponent])
+        game.instance_variable_set(:@active_player, active_player)
+      end
+
+      it 'will not accept Queen' do
+        result = game.send(:valid_start?, queen)
         expect(result).to be_falsy
       end
     end

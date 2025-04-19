@@ -43,4 +43,17 @@ module Positions
     valid_positions = /[A-Ha-h][1-8]/
     valid_positions.match?(position) && position.length == square_name_length
   end
+
+  # a Letter moves along the axis of its index
+  # a Number moves opposite the axis of its index
+  def get_direction(current_pos, move_to_pos)
+    return 0 if current_pos == move_to_pos
+
+    letter = /[A-H]/
+    if letter.match(current_pos)
+      current_pos < move_to_pos ? 1 : -1
+    else
+      current_pos < move_to_pos ? -1 : 1
+    end
+  end
 end
