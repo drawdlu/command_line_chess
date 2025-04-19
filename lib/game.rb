@@ -16,14 +16,16 @@ class Game
     @black = Player.new(:black)
     @active_player = @white
     @win_draw = nil
+    @opponent_pieces_in_check = 0
   end
 
   def start
     loop do
       @board.update_valid_moves
       puts @board
-      prompt_check if check?
       break if win_draw_condition?
+
+      prompt_check if check?
 
       move = ask_for_move
       apply_move(move[:initial_pos], move[:final_pos])
@@ -119,14 +121,20 @@ class Game
   end
 
   def check?
+    update_opponent_pieces_in_check
+    @opponent_pieces_in_check.positive?
+  end
+
+  def update_opponent_pieces_in_check
+    check = 0
     ally_king = active_king
     opponent_color = @active_player.color == :white ? :black : :white
 
     get_pieces(opponent_color).each do |piece|
-      return true if piece.valid_moves.include?(ally_king.current_position)
+      check += 1 if piece.valid_moves.include?(ally_king.current_position)
     end
 
-    false
+    @opponent_pieces_in_check = check
   end
 
   def get_from_set(set_pieces, piece_class)
