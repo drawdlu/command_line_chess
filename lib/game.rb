@@ -104,6 +104,8 @@ class Game
       return ally_king.current_position == position if check_num > 1
 
       valid = initial_could_remove_check?(position)
+    elsif piece.instance_of?(King)
+      valid = !opponent_controls_king_moves?
     end
 
     valid

@@ -214,6 +214,51 @@ describe Game do
           expect(result).to be_falsy
         end
       end
+
+      context 'when trying to move King that cant be moved on check' do
+        let(:pieces) do
+          [{ color: :white, position: 'A6', class: Rook },
+           { color: :white, position: 'H2', class: Rook },
+           { color: :white, position: 'B1', class: King },
+           { color: :black, position: 'B6', class: Rook },
+           { color: :black, position: 'C6', class: Queen },
+           { color: :black, position: 'E5', class: Bishop },
+           { color: :black, position: 'A3', class: Rook }]
+        end
+        let(:board) { create_dummy(pieces) }
+        before do
+          opponent = board.board[2][1]
+          game.instance_variable_set(:@board, board)
+          game.instance_variable_set(:@opponent_pieces_in_check, [opponent])
+          game.instance_variable_set(:@active_player, active_player)
+        end
+        it 'will return false' do
+          king_position = 'B1'
+          result = game.send(:valid_start?, king_position)
+          expect(result).to be_falsy
+        end
+      end
+
+      context 'moving King not in check but all moves of King controlled by opponent' do
+        let(:pieces) do
+          [{ color: :white, position: 'A6', class: Rook },
+           { color: :white, position: 'B1', class: King },
+           { color: :black, position: 'G2', class: Rook },
+           { color: :black, position: 'C6', class: Queen },
+           { color: :black, position: 'E5', class: Bishop },
+           { color: :black, position: 'A3', class: Rook }]
+        end
+        let(:board) { create_dummy(pieces) }
+        before do
+          game.instance_variable_set(:@board, board)
+          game.instance_variable_set(:@active_player, active_player)
+        end
+        it 'will return false' do
+          king_position = 'B1'
+          result = game.send(:valid_start?, king_position)
+          expect(result).to be_falsy
+        end
+      end
     end
 
     describe '#valid_move_position?' do
