@@ -226,13 +226,47 @@ class Game
   end
 
   def announce_outcome
-    return unless @win_draw.nil?
-
-    puts 'Game reached STALEMATE'
+    if @win_draw.nil?
+      puts 'Game reached STALEMATE'
+    else
+      player = @active_player == @white ? @black : @white
+      puts 'CHECKMATE!!'
+      puts "#{player.name} HAS WON THE GAME!"
+    end
   end
 
   def win_draw_condition?
-    stalemate?
+    if stalemate?
+      return true
+    elsif checkmate?
+      @win_draw = :checkmate
+      return true
+    end
+
+    false
+  end
+
+  def checkmate?
+    opponent_controls_king_moves? && check? && no_move_to_protect?
+  end
+
+  def no_move_to_protect?
+    return true if @opponent_pieces_in_check.length > 1
+
+    pieces = @active_player.color == :white ? @board.white_pieces : @board.black_pieces
+    opponent_position = @opponent_pieces_in_check[0].current_position
+    pieces.each do |piece|
+      next if piece.instance_of?(King)
+
+      valid_moves = piece.valid_moves
+      protect = square_to_protect_king
+
+      puts valid_moves
+      puts opponent_position
+      puts protect
+      return false if valid_moves.include?(opponent_position) || valid_moves.include?(protect)
+    end
+    true
   end
 
   def stalemate?

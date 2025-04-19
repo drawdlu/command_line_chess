@@ -5,6 +5,8 @@ require_relative '../lib/rook'
 require_relative '../lib/player'
 require_relative '../lib/queen'
 require_relative '../lib/pawn'
+require_relative '../lib/bishop'
+require_relative '../lib/knight'
 
 describe Game do
   $stdout = File.open(File::NULL, 'w')
@@ -273,6 +275,58 @@ describe Game do
           result = game.send(:valid_move_position?, rook, 'D6')
           expect(result).to be_falsy
         end
+      end
+    end
+  end
+
+  describe '#checkmate?' do
+    let(:active_player) { Player.new(:white) }
+
+    context 'when it is not checkmate' do
+      let(:pieces) do
+        [{ color: :white, position: 'A6', class: Rook },
+         { color: :white, position: 'H2', class: Rook },
+         { color: :white, position: 'B1', class: King },
+         { color: :black, position: 'B6', class: Rook },
+         { color: :black, position: 'C6', class: Queen },
+         { color: :black, position: 'E5', class: Bishop },
+         { color: :black, position: 'A3', class: Rook }]
+      end
+      let(:board) { create_dummy(pieces) }
+      before do
+        opponent = board.board[2][1]
+        game.instance_variable_set(:@board, board)
+        game.instance_variable_set(:@opponent_pieces_in_check, [opponent])
+        game.instance_variable_set(:@active_player, active_player)
+      end
+
+      it 'will return False' do
+        result = game.send(:checkmate?)
+        expect(result).to be_falsy
+      end
+    end
+
+    context 'when it is checkmate' do
+      let(:pieces) do
+        [{ color: :white, position: 'D6', class: Rook },
+         { color: :white, position: 'E1', class: Rook },
+         { color: :white, position: 'B1', class: King },
+         { color: :black, position: 'B6', class: Rook },
+         { color: :black, position: 'C6', class: Queen },
+         { color: :black, position: 'E5', class: Bishop },
+         { color: :black, position: 'A3', class: Rook }]
+      end
+      let(:board) { create_dummy(pieces) }
+      before do
+        opponent = board.board[2][1]
+        game.instance_variable_set(:@board, board)
+        game.instance_variable_set(:@opponent_pieces_in_check, [opponent])
+        game.instance_variable_set(:@active_player, active_player)
+      end
+
+      it 'will return True' do
+        result = game.send(:checkmate?)
+        expect(result).to be_truthy
       end
     end
   end
