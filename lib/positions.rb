@@ -39,7 +39,8 @@ module Positions
   end
 
   def valid_position?(position)
+    square_name_length = 2
     valid_positions = /[A-Ha-h][1-8]/
-    valid_positions.match?(position)
+    valid_positions.match?(position) && position.length == square_name_length
   end
 end
