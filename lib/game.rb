@@ -139,12 +139,41 @@ class Game
       print 'SQUARE to move to: '
       move = gets.chomp.upcase
 
-      break if valid_position?(move) && piece.valid_moves.include?(move)
+      break if valid_move_position?(piece, move)
 
       move = ''
     end
 
     move.upcase
+  end
+
+  def valid_move_position?(piece, move)
+    valid = valid_position?(move) && piece.valid_moves.include?(move)
+
+    check_num = @opponent_pieces_in_check.length
+    if check_num.positive? && valid
+      valid = if piece.instance_of?(King)
+                not_opponent_controlled(move)
+              else
+                move_to_protect?(move)
+              end
+    end
+
+    valid
+  end
+
+  def move_to_protect?(move)
+    @opponent_pieces_in_check[0].current_position == move ||
+      square_to_protect_king == move
+  end
+
+  def not_opponent_controlled(move)
+    @opponent_pieces_in_check.each do |piece|
+      puts move
+      return false if piece.valid_moves.include?(move)
+    end
+
+    true
   end
 
   def ally?(position)
