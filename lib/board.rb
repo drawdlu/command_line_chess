@@ -61,11 +61,20 @@ class Board
     final_king_index = get_final_pos(rook_index, King)
     final_rook_index = get_final_pos(rook_index, Rook)
 
+    update_piece_position(king_index, final_king_index)
+    update_piece_position(rook_index, final_rook_index)
     move_piece(king_index, final_king_index)
     move_piece(rook_index, final_rook_index)
   end
 
   private
+
+  def update_piece_position(initial_index, final_index)
+    initial_pos = square_name(initial_index[:x], initial_index[:y])
+    final_pos = square_name(final_index[:x], final_index[:y])
+    piece = get_piece(initial_pos)
+    piece.update_position(final_pos)
+  end
 
   def get_final_pos(rook_index, piece_class)
     rook_position = square_name(rook_index[:x], rook_index[:y])

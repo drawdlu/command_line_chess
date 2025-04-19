@@ -195,8 +195,12 @@ describe Board do
         board.handle_castling_move('A1', 'E1')
         king_in_position = board.board[7][2] == king
         rook_in_position = board.board[7][3] == rook
+        rook_position = rook.current_position
+        king_position = king.current_position
         expect(king_in_position).to be_truthy
         expect(rook_in_position).to be_truthy
+        expect(king_position).to eq('C1')
+        expect(rook_position).to eq('D1')
       end
     end
 
@@ -207,8 +211,12 @@ describe Board do
         board.handle_castling_move('E1', 'H1')
         king_in_position = board.board[7][6] == king
         rook_in_position = board.board[7][5] == rook
+        rook_position = rook.current_position
+        king_position = king.current_position
         expect(king_in_position).to be_truthy
         expect(rook_in_position).to be_truthy
+        expect(king_position).to eq('G1')
+        expect(rook_position).to eq('F1')
       end
     end
   end
