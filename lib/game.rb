@@ -157,6 +157,8 @@ class Game
               else
                 move_to_protect?(move)
               end
+    elsif piece.instance_of?(King)
+      valid = not_opponent_controlled(move)
     end
 
     @opponent_pieces_in_check = [] if valid
@@ -170,8 +172,9 @@ class Game
   end
 
   def not_opponent_controlled(move)
-    @opponent_pieces_in_check.each do |piece|
-      puts move
+    opponent_pieces = @active_player.color == :white ? @board.black_pieces : @board.white_pieces
+
+    opponent_pieces.each do |piece|
       return false if piece.valid_moves.include?(move)
     end
 
