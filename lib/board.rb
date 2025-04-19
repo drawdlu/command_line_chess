@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative '../lib/positions'
-require_relative '../lib/pawn'
-require_relative '../lib/rook'
-require_relative '../lib/bishop'
-require_relative '../lib/knight'
-require_relative '../lib/queen'
-require_relative '../lib/king'
+require_relative 'positions'
+require_relative 'pawn'
+require_relative 'rook'
+require_relative 'bishop'
+require_relative 'knight'
+require_relative 'queen'
+require_relative 'king'
 
 # Handles state of board
 class Board
@@ -55,10 +55,39 @@ class Board
     update_moves_set(@white_pieces)
   end
 
+  def handle_castling_move(position1, position2)
+    king_index = get_position_index(position1, position2, King)
+    rook_index = get_position_index(position1, position2, Rook)
+    final_king_index = get_final_pos(rook_index, King)
+    final_rook_index = get_final_pos(rook_index, Rook)
+
+    move_piece(king_index, final_king_index)
+    move_piece(rook_index, final_rook_index)
+  end
+
   private
 
+  def get_final_pos(rook_index, piece_class)
+    rook_position = square_name(rook_index[:x], rook_index[:y])
+    final_pos_letter = if piece_class == King
+                         rook_position[0] == 'A' ? 'C' : 'G'
+                       else
+                         rook_position[0] == 'A' ? 'D' : 'F'
+                       end
+    get_name_index("#{final_pos_letter}#{rook_position[1]}")
+  end
+
+  def get_position_index(position1, position2, piece_class)
+    position = if piece_class == King
+                 position1[0] == 'E' ? position1 : position2
+               else
+                 position1[0] == 'E' ? position2 : position1
+               end
+    get_name_index(position)
+  end
+
   def handle_en_passant(initial_position, position)
-    piece = get_piece(initial_position, self)
+    piece = get_piece(initial_position)
     return unless move_is_en_passant?(position, piece)
 
     delete_piece(position, piece)
@@ -66,7 +95,7 @@ class Board
 
   def delete_piece(final_position, piece_to_move)
     back_position = get_back_position(piece_to_move, final_position)
-    back_piece = get_piece(back_position, self)
+    back_piece = get_piece(back_position)
 
     index = get_name_index(back_position)
 

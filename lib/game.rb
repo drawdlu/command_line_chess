@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
-require_relative '../lib/board'
-require_relative '../lib/positions'
-require_relative '../lib/player'
+require_relative 'board'
+require_relative 'positions'
+require_relative 'player'
+require_relative 'rook'
+require_relative 'king'
 
 # Controls game loop and special conditions
 class Game
@@ -51,9 +53,22 @@ class Game
 
   def apply_move(initial_pos, final_pos)
     piece = get_piece(initial_pos, @board)
-    @board.move_to(initial_pos, final_pos)
-    piece.update_position(final_pos)
-    @board.update_last_move(initial_pos, final_pos, piece)
+    second_piece = get_piece(final_pos, @board)
+
+    if castling?(piece, second_piece)
+      @board.handle_castling_move(initial_pos, final_pos)
+    else
+      @board.move_to(initial_pos, final_pos)
+      piece.update_position(final_pos)
+      @board.update_last_move(initial_pos, final_pos, piece)
+    end
+  end
+
+  # the only move where you can pick an ally to move to is Castling
+  def castling?(piece1, piece2)
+    return false if piece2.nil?
+
+    piece1.color == piece2.color
   end
 
   def prompt_player

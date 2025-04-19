@@ -1,5 +1,7 @@
 require_relative '../lib/board'
 require_relative '../lib/pawn'
+require_relative '../lib/king'
+require_relative '../lib/rook'
 
 describe Board do
   subject(:board) { described_class.new }
@@ -175,6 +177,38 @@ describe Board do
           value = board.board[3][0]
           expect(value).to be_nil
         end
+      end
+    end
+  end
+
+  describe '#handle_castling_move' do
+    let(:pieces) do
+      [{ color: :white, position: 'A1', class: Rook },
+       { color: :white, position: 'E1', class: King },
+       { color: :white, position: 'H1', class: Rook }]
+    end
+    let(:board) { create_dummy(pieces) }
+    context 'when positions are A1 and E1' do
+      it 'will update board King C1, Rook D1 and update piece positions' do
+        rook = board.board[7][0]
+        king = board.board[7][4]
+        board.handle_castling_move('A1', 'E1')
+        king_in_position = board.board[7][2] == king
+        rook_in_position = board.board[7][3] == rook
+        expect(king_in_position).to be_truthy
+        expect(rook_in_position).to be_truthy
+      end
+    end
+
+    context 'when positions are E1 and H1' do
+      it 'will update board King G1, Rook F1 and update piece positions' do
+        rook = board.board[7][7]
+        king = board.board[7][4]
+        board.handle_castling_move('E1', 'H1')
+        king_in_position = board.board[7][6] == king
+        rook_in_position = board.board[7][5] == rook
+        expect(king_in_position).to be_truthy
+        expect(rook_in_position).to be_truthy
       end
     end
   end
