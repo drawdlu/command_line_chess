@@ -35,9 +35,4 @@ class Rook < Piece
 
     moves
   end
-
-  def update_position(position)
-    @current_position = position
-    @moved = true
-  end
 end

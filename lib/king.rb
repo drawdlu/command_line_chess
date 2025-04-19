@@ -28,11 +28,6 @@ class King < Piece
     @moved = true
   end
 
-  def update_position(position)
-    @current_position = position
-    @moved = true
-  end
-
   private
 
   def one_square_distance?(position)
