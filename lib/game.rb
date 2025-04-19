@@ -159,6 +159,8 @@ class Game
               end
     end
 
+    @opponent_pieces_in_check = [] if valid
+
     valid
   end
 
