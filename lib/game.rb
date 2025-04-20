@@ -92,23 +92,24 @@ class Game
   end
 
   def valid_start?(position)
+    return false unless valid_position?(position) &&
+                        !@board.empty?(position) &&
+                        ally?(position)
+
     piece = get_piece(position, @board)
 
-    valid = valid_position?(position) &&
-            !@board.empty?(position) &&
-            ally?(position) &&
-            !piece.valid_moves.empty?
+    return false if piece.valid_moves.empty?
 
     check_num = @opponent_pieces_in_check.length
     if check_num.positive? && valid
       return ally_king.current_position == position if check_num > 1
 
-      valid = initial_could_remove_check?(position)
+      return initial_could_remove_check?(position)
     elsif piece.instance_of?(King)
-      valid = !opponent_controls_king_moves?
+      return !opponent_controls_king_moves?
     end
 
-    valid
+    true
   end
 
   def initial_could_remove_check?(position)
