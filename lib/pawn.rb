@@ -12,7 +12,7 @@ class Pawn < Piece
   include Positions
 
   def to_s
-    color == :white ? '♟ ' : '♙ '
+    '♟'
   end
 
   def all_valid_moves

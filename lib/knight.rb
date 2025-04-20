@@ -4,7 +4,7 @@ class Knight < Piece
   KNIGHT_MOVES = [1, -1, 2, -2].permutation(2).filter { |pair| pair[0].abs != pair[1].abs }
 
   def to_s
-    color == :white ? '♞ ' : '♘ '
+    '♞'
   end
 
   def all_valid_moves

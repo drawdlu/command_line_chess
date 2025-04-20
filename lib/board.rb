@@ -7,6 +7,7 @@ require_relative 'bishop'
 require_relative 'knight'
 require_relative 'queen'
 require_relative 'king'
+require 'colorize'
 
 # Handles state of board
 class Board
@@ -14,23 +15,14 @@ class Board
 
   attr_reader :board, :black_pieces, :white_pieces, :last_move
 
+  COLORS = [:on_white].freeze
+
   def initialize
     @board = Array.new(8) { Array.new(8, nil) }
     @black_pieces = Set[]
     @white_pieces = Set[]
     @last_move = nil
     populate_board
-  end
-
-  def to_s
-    board = ''
-    @board.each_with_index do |row, x_index|
-      board += line
-      board += row(row, x_index)
-    end
-    board += line
-
-    board
   end
 
   def empty?(position)
@@ -181,21 +173,37 @@ class Board
     line
   end
 
+  def to_s
+    board = "\n"
+    @board.each_with_index do |row, x_index|
+      board += row(row, x_index)
+    end
+    board += letters
+    "#{board}\n"
+  end
+
+  def letters
+    letter_row = "#{space}  "
+    LETTER_POSITIONS.each do |letter|
+      letter_row += " #{letter}  "
+    end
+    "#{letter_row}\n"
+  end
+
   def row(row, x_index)
     row_string = space
+    row_string += "#{8 - x_index} "
     row.each_with_index do |val, y_index|
+      bg_color = (y_index + x_index).even? ? :on_white : :on_light_black
       row_string += if val.nil?
-                      "|  #{square_name(x_index, y_index)} "
+                      '    '.send(bg_color)
                     else
-                      "|  #{val} "
+                      color = val.color == :black ? :black : :yellow
+                      " #{val}  ".send(color).send(bg_color)
                     end
     end
 
-    "#{row_string}|\n"
-  end
-
-  def line
-    "#{space}-------------------------------------------------\n"
+    "#{row_string}\n"
   end
 
   def space
@@ -211,3 +219,7 @@ class Board
       piece.valid_moves.include?(@last_move[:to])
   end
 end
+
+test = Board.new
+
+puts test

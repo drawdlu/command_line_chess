@@ -5,7 +5,7 @@ require_relative 'piece'
 # Controls bishop movement
 class Bishop < Piece
   def to_s
-    color == :white ? '♝ ' : '♗ '
+    '♝'
   end
 
   def all_valid_moves
