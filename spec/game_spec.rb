@@ -201,7 +201,7 @@ describe Game do
         end
       end
 
-      context 'when in check moving Queen that cant remove check' do
+      context 'when in check moving Queen that can cover path to King' do
         before do
           opponent = board.board[2][4]
           game.instance_variable_set(:@board, board)
@@ -209,9 +209,9 @@ describe Game do
           game.instance_variable_set(:@active_player, active_player)
         end
 
-        it 'will not accept Queen' do
+        it 'will accept Queen' do
           result = game.send(:valid_start?, queen)
-          expect(result).to be_falsy
+          expect(result).to be_truthy
         end
       end
 

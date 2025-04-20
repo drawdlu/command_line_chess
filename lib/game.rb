@@ -122,17 +122,20 @@ class Game
   end
 
   def ally_contains_protect_king(piece)
-    opponent_position = @opponent_pieces_in_check[0].current_position
-    piece.valid_moves.include?(square_to_protect_king) ||
-      piece.valid_moves.include?(opponent_position)
+    protect_moves = squares_to_protect_king
+    piece.valid_moves.each do |move|
+      return true if protect_moves.include?(move)
+    end
+
+    false
   end
 
-  def square_to_protect_king
+  def squares_to_protect_king
     king_position = active_king.current_position
     opponent_position = @opponent_pieces_in_check[0].current_position
     x_direction = get_direction(king_position[1], opponent_position[1])
     y_direction = get_direction(king_position[0], opponent_position[0])
-    move_pos(king_position, x_direction, y_direction)
+    active_king.directional_moves([{ x: x_direction, y: y_direction }])
   end
 
   def get_move_position(piece)
@@ -169,8 +172,7 @@ class Game
   end
 
   def move_to_protect?(move)
-    @opponent_pieces_in_check[0].current_position == move ||
-      square_to_protect_king == move
+    squares_to_protect_king.include?(move)
   end
 
   def not_opponent_controlled(move)
@@ -259,17 +261,10 @@ class Game
     return true if @opponent_pieces_in_check.length > 1
 
     pieces = @active_player.color == :white ? @board.white_pieces : @board.black_pieces
-    opponent_position = @opponent_pieces_in_check[0].current_position
     pieces.each do |piece|
       next if piece.instance_of?(King)
 
-      valid_moves = piece.valid_moves
-      protect = square_to_protect_king
-
-      puts valid_moves
-      puts opponent_position
-      puts protect
-      return false if valid_moves.include?(opponent_position) || valid_moves.include?(protect)
+      return false if ally_contains_protect_king(piece)
     end
     true
   end

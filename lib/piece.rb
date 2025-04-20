@@ -33,6 +33,27 @@ class Piece
     @board.board[index[:x]][index[:y]].color != @color
   end
 
+  def directional_moves(directions)
+    moves = Set[]
+
+    directions.each do |direction|
+      position = @current_position
+
+      while within_board?(position, direction[:x], direction[:y])
+        position = move_pos(position, direction[:x], direction[:y])
+
+        if @board.empty?(position)
+          moves.add(position)
+        else
+          moves.add(position) if opponent?(position)
+          break
+        end
+      end
+    end
+
+    moves
+  end
+
   private
 
   def no_pieces_on_path?(position)
@@ -67,27 +88,6 @@ class Piece
 
   def get_distance(a_index, b_index)
     (a_index.ord - b_index.ord).abs
-  end
-
-  def directional_moves(directions)
-    moves = Set[]
-
-    directions.each do |direction|
-      position = @current_position
-
-      while within_board?(position, direction[:x], direction[:y])
-        position = move_pos(position, direction[:x], direction[:y])
-
-        if @board.empty?(position)
-          moves.add(position)
-        else
-          moves.add(position) if opponent?(position)
-          break
-        end
-      end
-    end
-
-    moves
   end
 
   def within_board?(position, x_direction, y_direction)
