@@ -168,7 +168,8 @@ describe Game do
         end
 
         it 'will accept King position when it has a move not controlled by opponent' do
-          result = game.send(:valid_start?, king_position)
+          king = board.board[7][4]
+          result = game.send(:valid_start?, king, king_position)
           expect(result).to be_truthy
         end
       end
@@ -182,7 +183,8 @@ describe Game do
         end
 
         it 'will accept Rook given that it can protect King' do
-          result = game.send(:valid_start?, protect_rook)
+          rook = board.board[6][7]
+          result = game.send(:valid_start?, rook, protect_rook)
           expect(result).to be_truthy
         end
       end
@@ -196,7 +198,8 @@ describe Game do
         end
 
         it 'will accept Rook position given that it can take opponent that has check on King' do
-          result = game.send(:valid_start?, eat_rook)
+          rook = board.board[2][0]
+          result = game.send(:valid_start?, rook, eat_rook)
           expect(result).to be_truthy
         end
       end
@@ -210,7 +213,8 @@ describe Game do
         end
 
         it 'will accept Queen' do
-          result = game.send(:valid_start?, queen)
+          queen_piece = board.board[4][1]
+          result = game.send(:valid_start?, queen_piece, queen)
           expect(result).to be_truthy
         end
       end
@@ -234,7 +238,8 @@ describe Game do
         end
         it 'will return false' do
           king_position = 'B1'
-          result = game.send(:valid_start?, king_position)
+          king = board.board[7][1]
+          result = game.send(:valid_start?, king, king_position)
           expect(result).to be_falsy
         end
       end
@@ -255,7 +260,8 @@ describe Game do
         end
         it 'will return false' do
           king_position = 'B1'
-          result = game.send(:valid_start?, king_position)
+          king = board.board[7][1]
+          result = game.send(:valid_start?, king, king_position)
           expect(result).to be_falsy
         end
       end
