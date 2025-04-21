@@ -53,10 +53,18 @@ class Game
   def ask_for_move
     prompt_player
     move = ask_for_move_position
-    move_data = extract_data(move)
-    piece = piece_with_move(move_data)
-    initial_pos = piece.current_position
-    final_pos = move_data[:position]
+
+    if king_side?(move) || queen_side?(move)
+      king_pos = active_king.current_position
+      initial_pos = king_pos
+      letter = king_side?(move) ? 'H' : 'A'
+      final_pos = "#{letter}#{king_pos[1]}"
+    else
+      move_data = extract_data(move)
+      piece = piece_with_move(move_data)
+      initial_pos = piece.current_position
+      final_pos = move_data[:position]
+    end
 
     { final_pos: final_pos, initial_pos: initial_pos }
   end
