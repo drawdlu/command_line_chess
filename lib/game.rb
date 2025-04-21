@@ -111,6 +111,8 @@ class Game
   end
 
   def valid_code?(move)
+    return false unless valid_position?(move[-2..])
+
     length = move.length
 
     case length
@@ -142,7 +144,7 @@ class Game
   def extract_data(move)
     data = { class: Pawn, piece_position: nil, take: false, position: nil }
 
-    data[:position] = move[-2..]
+    data[:position] = move[-2..].upcase
 
     other_data = move[0..-3]
 
@@ -150,7 +152,7 @@ class Game
       if MOVES.key?(char.to_sym)
         data[:class] = MOVES[char.to_sym]
       elsif char.match?(/\d/) || char.match?(/[a-h]/)
-        data[:piece_position] = char
+        data[:piece_position] = char.upcase
       elsif char == 'x'
         data[:take] = true
       end
@@ -163,39 +165,26 @@ class Game
     move[1] != move[3] && move[1] != move[4]
   end
 
-  def piece_with_move(move)
+  def piece_with_move(move_data)
     pieces = active_player_pieces
 
-    position = move.length == 2 ? move : move[1..2]
-    piece_class = get_class(move)
+    position = move_data[:position]
+    piece_class = move_data[:class]
 
     pieces.each do |piece|
+      if !move_data[:piece_position].nil? &&
+         !piece.current_position.include?(move_data[:piece_position])
+        return nil
+      end
       return piece if piece.instance_of?(piece_class) &&
                       piece.valid_moves.include?(position) &&
-                      valid_start?(piece.current_position)
+                      valid_start?(piece, piece.current_position)
     end
 
     nil
   end
 
-  def get_class(move)
-    length = move.length
-    if length == 2
-      Pawn
-    else
-      MOVES[move[0].to_sym]
-    end
-  end
-
-  def valid_start?(position)
-    return false unless valid_position?(position) &&
-                        !@board.empty?(position) &&
-                        ally?(position)
-
-    piece = get_piece(position, @board)
-
-    return false if piece.valid_moves.empty?
-
+  def valid_start?(piece, position)
     check_num = @opponent_pieces_in_check.length
     if check_num.positive?
       return ally_king.current_position == position if check_num > 1

@@ -456,58 +456,74 @@ describe Game do
 
   describe '#filter_move' do
     context 'when b2 is entered' do
-      it 'will return {class: Pawn, piece_position: nil, take: false, position: b2}' do
+      it 'will return {class: Pawn, piece_position: nil, take: false, position: B2}' do
         result = game.send(:extract_data, 'b2')
-        filtered = { class: Pawn, piece_position: nil, take: false, position: 'b2' }
+        filtered = { class: Pawn, piece_position: nil, take: false, position: 'B2' }
         expect(result).to eq(filtered)
       end
     end
 
     context 'when Na3 is entered' do
-      it 'will return {class: Knight, piece_position: nil, take: false, position: a3}' do
+      it 'will return {class: Knight, piece_position: nil, take: false, position: A3}' do
         result = game.send(:extract_data, 'Na3')
-        filtered = { class: Knight, piece_position: nil, take: false, position: 'a3' }
+        filtered = { class: Knight, piece_position: nil, take: false, position: 'A3' }
         expect(result).to eq(filtered)
       end
     end
 
     context 'when dxc3 is entered' do
-      it 'will return {class: Pawn, piece_position: d, take: true, position: c3}' do
+      it 'will return {class: Pawn, piece_position: d, take: true, position: C3}' do
         result = game.send(:extract_data, 'dxc3')
-        filtered = { class: Pawn, piece_position: 'd', take: true, position: 'c3' }
+        filtered = { class: Pawn, piece_position: 'D', take: true, position: 'C3' }
         expect(result).to eq(filtered)
       end
     end
 
     context 'when R4d8 is entered' do
-      it 'will return {class: Rook, piece_position: 4, take: true, position: c3}' do
+      it 'will return {class: Rook, piece_position: 4, take: true, position: D8}' do
         result = game.send(:extract_data, 'R4d8')
-        filtered = { class: Rook, piece_position: '4', take: false, position: 'd8' }
+        filtered = { class: Rook, piece_position: '4', take: false, position: 'D8' }
         expect(result).to eq(filtered)
       end
     end
 
     context 'when Ncxe5 is entered' do
-      it 'will return {class: Knight, piece_position: c, take: true, position: e5}' do
+      it 'will return {class: Knight, piece_position: c, take: true, position: E5}' do
         result = game.send(:extract_data, 'Ncxe5')
-        filtered = { class: Knight, piece_position: 'c', take: true, position: 'e5' }
+        filtered = { class: Knight, piece_position: 'C', take: true, position: 'E5' }
         expect(result).to eq(filtered)
       end
     end
   end
 
   describe '#piece_with_move' do
-    context 'when Na3' do
+    let(:board) { Board.new }
+    context 'when { class: Pawn, piece_position: nil, take: false, position: C3 }' do
       before do
-        board = Board.new
         board.update_valid_moves
         game.instance_variable_set(:@board, board)
       end
-      xit 'will return Knight at B1' do
-        result = game.send(:piece_with_move, 'Na3')
-        knight = result.instance_of?(Knight)
+      it 'will return Pawn at C2' do
+        move_data = { class: Pawn, piece_position: nil, take: false, position: 'C3' }
+        result = game.send(:piece_with_move, move_data)
+        pawn = result.instance_of?(Pawn)
         position = result.current_position
-        expect(knight).to be_truthy
+        expect(pawn).to be_truthy
+        expect(position).to eq('C2')
+      end
+    end
+
+    context 'when { class: Knight, piece_position: nil, take: false, position: A3 }' do
+      before do
+        board.update_valid_moves
+        game.instance_variable_set(:@board, board)
+      end
+      it 'will return Knight at B1' do
+        move_data = { class: Knight, piece_position: nil, take: false, position: 'A3' }
+        result = game.send(:piece_with_move, move_data)
+        pawn = result.instance_of?(Knight)
+        position = result.current_position
+        expect(pawn).to be_truthy
         expect(position).to eq('B1')
       end
     end
