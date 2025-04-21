@@ -141,13 +141,20 @@ class Game
     end
   end
 
+  def valid_length_five?(move)
+    move[1] != move[3] && move[1] != move[4]
+  end
+
   def extract_data(move)
     data = { class: Pawn, piece_position: nil, take: false, position: nil }
 
     data[:position] = move[-2..].upcase
 
     other_data = move[0..-3]
+    extract_additional_data(other_data, data)
+  end
 
+  def extract_additional_data(other_data, data)
     other_data.chars.each do |char|
       if MOVES.key?(char.to_sym)
         data[:class] = MOVES[char.to_sym]
@@ -161,27 +168,26 @@ class Game
     data
   end
 
-  def valid_length_five?(move)
-    move[1] != move[3] && move[1] != move[4]
-  end
-
   def piece_with_move(move_data)
     pieces = active_player_pieces
 
     position = move_data[:position]
     piece_class = move_data[:class]
+    partial_position = move_data[:piece_position]
 
     pieces.each do |piece|
-      if !move_data[:piece_position].nil? &&
-         !piece.current_position.include?(move_data[:piece_position])
-        return nil
-      end
-      return piece if piece.instance_of?(piece_class) &&
-                      piece.valid_moves.include?(position) &&
-                      valid_start?(piece, piece.current_position)
+      return piece if correct_piece?(piece, partial_position, piece_class, position)
     end
 
     nil
+  end
+
+  def correct_piece?(piece, partial_position, piece_class, position)
+    return false if !partial_position.nil? && !piece.current_position.include?(partial_position)
+
+    piece.instance_of?(piece_class) &&
+      piece.valid_moves.include?(position) &&
+      valid_start?(piece, piece.current_position)
   end
 
   def valid_start?(piece, position)
