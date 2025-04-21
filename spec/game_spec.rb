@@ -575,4 +575,48 @@ describe Game do
       end
     end
   end
+
+  describe '#valid_castling?' do
+    let(:pieces) do
+      [{ color: :white, position: 'E1', class: King },
+       { color: :white, position: 'H1', class: Rook },
+       { color: :white, position: 'A1', class: Knight }]
+    end
+    let(:dummy_board) { create_dummy(pieces) }
+    let(:active_player) { Player.new(:white) }
+    context 'when king side and both pieces has not moved' do
+      before do
+        game.instance_variable_set(:@board, dummy_board)
+        game.instance_variable_set(:@active_player, active_player)
+      end
+      it 'will return true' do
+        result = game.send(:valid_castling?, '0-0')
+        expect(result).to be_truthy
+      end
+    end
+
+    context 'when queen side and knight is in A1' do
+      before do
+        game.instance_variable_set(:@board, dummy_board)
+        game.instance_variable_set(:@active_player, active_player)
+      end
+      it 'will return false' do
+        result = game.send(:valid_castling?, '0-0-0')
+        expect(result).to be_falsy
+      end
+    end
+
+    context 'when king side and rook has moved but still in H1' do
+      before do
+        game.instance_variable_set(:@board, dummy_board)
+        game.instance_variable_set(:@active_player, active_player)
+      end
+      it 'will return false' do
+        rook = dummy_board.board[7][7]
+        rook.instance_variable_set(:@moved, true)
+        result = game.send(:valid_castling?, '0-0-0')
+        expect(result).to be_falsy
+      end
+    end
+  end
 end

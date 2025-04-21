@@ -91,7 +91,7 @@ class Game
       print 'MOVE: '
       move = gets.chomp
 
-      break if valid_move?(move)
+      break if valid_move?(move) || valid_castling?(move)
 
       move = ''
     end
@@ -109,6 +109,31 @@ class Game
     return false if piece.nil?
 
     valid_start?(piece, piece.current_position) && valid_move_position?(piece, move_data[:position])
+  end
+
+  def valid_castling?(move)
+    if king_side?(move)
+      valid_castling_side?('H')
+    elsif queen_side?(move)
+      valid_castling_side?('A')
+    else
+      false
+    end
+  end
+
+  def valid_castling_side?(letter)
+    rook = get_piece("#{letter}#{active_king.current_position[1]}", @board)
+    return false if rook.nil? || !rook.instance_of?(Rook)
+
+    rook.moved == false && active_king.moved == false
+  end
+
+  def king_side?(move)
+    move == '0-0' || move.upcase == 'O-O'
+  end
+
+  def queen_side?(move)
+    move == '0-0-0' || move.upcase == 'O-O-O'
   end
 
   def taking_opponent_valid?(move_data)
