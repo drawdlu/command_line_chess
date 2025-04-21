@@ -9,7 +9,7 @@ require_relative '../lib/bishop'
 require_relative '../lib/knight'
 
 describe Game do
-  $stdout = File.open(File::NULL, 'w')
+  # $stdout = File.open(File::NULL, 'w')
   subject(:game) { described_class.new }
   describe '#valid_position?' do
     context 'when A8 is entered' do
@@ -372,6 +372,95 @@ describe Game do
       it 'will return True' do
         result = game.send(:checkmate?)
         expect(result).to be_truthy
+      end
+    end
+  end
+
+  describe '#valid_code?' do
+    context 'when Re5 is entered' do
+      it 'returns True' do
+        result = game.send(:valid_code?, 'Re5')
+        expect(result).to be_truthy
+      end
+    end
+
+    context 'when Ge5 is entered' do
+      it 'returns False' do
+        result = game.send(:valid_code?, 'Ge5')
+        expect(result).to be_falsy
+      end
+    end
+
+    context 'when g4 is entered' do
+      it 'returns True' do
+        result = game.send(:valid_code?, 'g4')
+        expect(result).to be_truthy
+      end
+    end
+
+    context 'when Rxd5 is entered' do
+      it 'returns True' do
+        result = game.send(:valid_code?, 'Rxd5')
+        expect(result).to be_truthy
+      end
+    end
+
+    context 'when Rdd5 is entered' do
+      it 'returns False' do
+        result = game.send(:valid_code?, 'Rdd5')
+        expect(result).to be_falsy
+      end
+    end
+
+    context 'when R4d8 is entered' do
+      it 'returns True' do
+        result = game.send(:valid_code?, 'R4d8')
+        expect(result).to be_truthy
+      end
+    end
+
+    context 'when Bdf4 is entered' do
+      it 'returns True' do
+        result = game.send(:valid_code?, 'Bdf4')
+        expect(result).to be_truthy
+      end
+    end
+
+    context 'when R4xd8 is entered' do
+      it 'returns True' do
+        result = game.send(:valid_code?, 'R4xd8')
+        expect(result).to be_truthy
+      end
+    end
+
+    context 'when Ncxe5 is entered' do
+      it 'returns True' do
+        result = game.send(:valid_code?, 'Ncxe5')
+        expect(result).to be_truthy
+      end
+    end
+
+    context 'when Nexe5 is entered' do
+      it 'returns False' do
+        result = game.send(:valid_code?, 'Nexe5')
+        expect(result).to be_falsy
+      end
+    end
+  end
+
+  describe '#piece_with_move' do
+    context 'when Na3' do
+      before do
+        board = Board.new
+        board.update_valid_moves
+        game.instance_variable_set(:@board, board)
+      end
+      xit 'will return Knight at B1' do
+        result = game.send(:piece_with_move, 'Na3')
+        knight = result.instance_of?(Knight)
+        position = result.current_position
+        expect(knight).to be_truthy
+        expect(position).to eq('B1')
       end
     end
   end

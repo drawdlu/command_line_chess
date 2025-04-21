@@ -5,10 +5,16 @@ require_relative 'positions'
 require_relative 'player'
 require_relative 'rook'
 require_relative 'king'
+require_relative 'knight'
+require_relative 'bishop'
+require_relative 'queen'
+require_relative 'pawn'
 
 # Controls game loop and special conditions
 class Game
   include Positions
+
+  MOVES = { N: Knight, B: Bishop, R: Rook, Q: Queen, K: King }.freeze
 
   def initialize
     @board = Board.new
@@ -46,7 +52,7 @@ class Game
 
   def ask_for_move
     prompt_player
-    initial_pos = ask_start_position
+    initial_pos = ask_for_move_position
     piece = get_piece(initial_pos, @board)
     final_pos = get_move_position(piece)
 
@@ -77,18 +83,85 @@ class Game
     puts "#{@active_player.name}'s turn to move"
   end
 
-  def ask_start_position
+  def ask_for_move_position
     move = ''
     while move == ''
-      print 'PIECE: '
+      print 'MOVE: '
       move = gets.chomp.upcase
 
-      break if valid_start?(move)
+      break if valid_move?(move)
 
       move = ''
     end
 
     move.upcase
+  end
+
+  def valid_move?(move)
+    return false unless valid_code?(move)
+
+    piece = piece_with_move(move)
+
+    return false if piece.nil?
+
+    valid_start?(move)
+  end
+
+  def valid_code?(move)
+    length = move.length
+
+    case length
+    when 2
+      two = /[a-h]\d/
+      two.match?(move)
+    when 3
+      three = /[N|Q|K|B|R][a-h]\d/
+      three.match?(move)
+    when 4
+      four = /[a-h|N|Q|K|B|R][x|\d|a-h][a-h]\d/
+      four.match?(move) && valid_length_four?(move)
+    when 5
+      five = /[N|Q|K|B|R][\d|a-h]x[a-h]\d/
+      five.match(move) && valid_length_five?(move)
+    else
+      false
+    end
+  end
+
+  def valid_length_four?(move)
+    if MOVES.key?(move[0].to_sym)
+      move[1] != move[3] && move[1] != move[2]
+    else
+      move[1] == 'x'
+    end
+  end
+
+  def valid_length_five?(move)
+    move[1] != move[3] && move[1] != move[4]
+  end
+
+  def piece_with_move(move)
+    pieces = active_player_pieces
+
+    position = move.length == 2 ? move : move[1..2]
+    piece_class = get_class(move)
+
+    pieces.each do |piece|
+      return piece if piece.instance_of?(piece_class) &&
+                      piece.valid_moves.include?(position) &&
+                      valid_start?(piece.current_position)
+    end
+
+    nil
+  end
+
+  def get_class(move)
+    length = move.length
+    if length == 2
+      Pawn
+    else
+      MOVES[move[0].to_sym]
+    end
   end
 
   def valid_start?(position)
@@ -101,7 +174,7 @@ class Game
     return false if piece.valid_moves.empty?
 
     check_num = @opponent_pieces_in_check.length
-    if check_num.positive? && valid
+    if check_num.positive?
       return ally_king.current_position == position if check_num > 1
 
       return initial_could_remove_check?(position)
@@ -139,33 +212,19 @@ class Game
     active_king.directional_moves([{ x: x_direction, y: y_direction }])
   end
 
-  def get_move_position(piece)
-    move = ''
-    while move == ''
-      print 'SQUARE to move to: '
-      move = gets.chomp.upcase
-
-      break if valid_move_position?(piece, move)
-
-      move = ''
-    end
-
-    move.upcase
-  end
-
   def valid_move_position?(piece, move)
-    valid = valid_position?(move) && piece.valid_moves.include?(move)
-
     check_num = @opponent_pieces_in_check.length
-    if check_num.positive? && valid
-      valid = if piece.instance_of?(King)
+    valid = if check_num.positive?
+              if piece.instance_of?(King)
                 not_opponent_controlled(move)
               else
                 move_to_protect?(move)
               end
-    elsif piece.instance_of?(King)
-      valid = not_opponent_controlled(move)
-    end
+            elsif piece.instance_of?(King)
+              not_opponent_controlled(move)
+            else
+              true
+            end
 
     @opponent_pieces_in_check = [] if valid
 
@@ -261,7 +320,7 @@ class Game
   def no_move_to_protect?
     return true if @opponent_pieces_in_check.length > 1
 
-    pieces = @active_player.color == :white ? @board.white_pieces : @board.black_pieces
+    pieces = active_player_pieces
     pieces.each do |piece|
       next if piece.instance_of?(King)
 
