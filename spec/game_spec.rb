@@ -528,4 +528,51 @@ describe Game do
       end
     end
   end
+
+  describe '#valid_move?' do
+    let(:board) { Board.new }
+    context 'when Na3' do
+      before do
+        board.update_valid_moves
+        game.instance_variable_set(:@board, board)
+      end
+      it 'will return true' do
+        result = game.send(:valid_move?, 'Na3')
+        expect(result).to be_truthy
+      end
+    end
+
+    context 'when h3' do
+      before do
+        board.update_valid_moves
+        game.instance_variable_set(:@board, board)
+      end
+      it 'will return true' do
+        result = game.send(:valid_move?, 'h3')
+        expect(result).to be_truthy
+      end
+    end
+
+    context 'when e5' do
+      before do
+        board.update_valid_moves
+        game.instance_variable_set(:@board, board)
+      end
+      it 'will return false' do
+        result = game.send(:valid_move?, 'e5')
+        expect(result).to be_falsy
+      end
+    end
+
+    context 'when a3' do
+      before do
+        board.update_valid_moves
+        game.instance_variable_set(:@board, board)
+      end
+      it 'will return true' do
+        result = game.send(:valid_move?, 'a3')
+        expect(result).to be_truthy
+      end
+    end
+  end
 end
