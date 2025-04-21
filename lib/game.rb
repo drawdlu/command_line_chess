@@ -140,10 +140,11 @@ class Game
   end
 
   def valid_castling_side?(letter)
-    rook = get_piece("#{letter}#{active_king.current_position[1]}", @board)
+    king_pos = active_king.current_position
+    rook = get_piece("#{letter}#{king_pos[1]}", @board)
     return false if rook.nil? || !rook.instance_of?(Rook)
 
-    rook.moved == false && active_king.moved == false
+    rook.valid_moves.include?(king_pos)
   end
 
   def king_side?(move)
