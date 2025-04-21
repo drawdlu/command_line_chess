@@ -100,7 +100,10 @@ class Game
   def valid_move?(move)
     return false unless valid_code?(move)
 
-    piece = piece_with_move(move)
+    move_data = extract_data(move)
+    return false if move_data[:take] && @board.empty?(move[:position])
+
+    piece = piece_with_move(move_data)
 
     return false if piece.nil?
 
@@ -122,7 +125,7 @@ class Game
       four.match?(move) && valid_length_four?(move)
     when 5
       five = /[N|Q|K|B|R][\d|a-h]x[a-h]\d/
-      five.match(move) && valid_length_five?(move)
+      five.match?(move) && valid_length_five?(move)
     else
       false
     end
@@ -134,6 +137,26 @@ class Game
     else
       move[1] == 'x'
     end
+  end
+
+  def extract_data(move)
+    data = { class: Pawn, piece_position: nil, take: false, position: nil }
+
+    data[:position] = move[-2..]
+
+    other_data = move[0..-3]
+
+    other_data.chars.each do |char|
+      if MOVES.key?(char.to_sym)
+        data[:class] = MOVES[char.to_sym]
+      elsif char.match?(/\d/) || char.match?(/[a-h]/)
+        data[:piece_position] = char
+      elsif char == 'x'
+        data[:take] = true
+      end
+    end
+
+    data
   end
 
   def valid_length_five?(move)

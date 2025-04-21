@@ -9,7 +9,7 @@ require_relative '../lib/bishop'
 require_relative '../lib/knight'
 
 describe Game do
-  # $stdout = File.open(File::NULL, 'w')
+  $stdout = File.open(File::NULL, 'w')
   subject(:game) { described_class.new }
   describe '#valid_position?' do
     context 'when A8 is entered' do
@@ -444,6 +444,48 @@ describe Game do
       it 'returns False' do
         result = game.send(:valid_code?, 'Nexe5')
         expect(result).to be_falsy
+      end
+    end
+  end
+
+  describe '#filter_move' do
+    context 'when b2 is entered' do
+      it 'will return {class: Pawn, piece_position: nil, take: false, position: b2}' do
+        result = game.send(:extract_data, 'b2')
+        filtered = { class: Pawn, piece_position: nil, take: false, position: 'b2' }
+        expect(result).to eq(filtered)
+      end
+    end
+
+    context 'when Na3 is entered' do
+      it 'will return {class: Knight, piece_position: nil, take: false, position: a3}' do
+        result = game.send(:extract_data, 'Na3')
+        filtered = { class: Knight, piece_position: nil, take: false, position: 'a3' }
+        expect(result).to eq(filtered)
+      end
+    end
+
+    context 'when dxc3 is entered' do
+      it 'will return {class: Pawn, piece_position: d, take: true, position: c3}' do
+        result = game.send(:extract_data, 'dxc3')
+        filtered = { class: Pawn, piece_position: 'd', take: true, position: 'c3' }
+        expect(result).to eq(filtered)
+      end
+    end
+
+    context 'when R4d8 is entered' do
+      it 'will return {class: Rook, piece_position: 4, take: true, position: c3}' do
+        result = game.send(:extract_data, 'R4d8')
+        filtered = { class: Rook, piece_position: '4', take: false, position: 'd8' }
+        expect(result).to eq(filtered)
+      end
+    end
+
+    context 'when Ncxe5 is entered' do
+      it 'will return {class: Knight, piece_position: c, take: true, position: e5}' do
+        result = game.send(:extract_data, 'Ncxe5')
+        filtered = { class: Knight, piece_position: 'c', take: true, position: 'e5' }
+        expect(result).to eq(filtered)
       end
     end
   end
