@@ -103,12 +103,20 @@ class Game
     return false unless valid_code?(move)
 
     move_data = extract_data(move)
-    return false if move_data[:take] && @board.empty?(move[:position])
+    return false unless taking_opponent_valid?(move_data)
 
     piece = piece_with_move(move_data)
     return false if piece.nil?
 
     valid_start?(piece, piece.current_position) && valid_move_position?(piece, move_data[:position])
+  end
+
+  def taking_opponent_valid?(move_data)
+    if move_data[:take]
+      !@board.empty?(move_data[:position])
+    else
+      @board.empty?(move_data[:position])
+    end
   end
 
   def valid_code?(move)
