@@ -55,16 +55,26 @@ class Game
     move = ask_for_move_position
 
     if king_side?(move) || queen_side?(move)
-      king_pos = active_king.current_position
-      initial_pos = king_pos
-      letter = king_side?(move) ? 'H' : 'A'
-      final_pos = "#{letter}#{king_pos[1]}"
+      castling_positions(move)
     else
-      move_data = extract_data(move)
-      piece = piece_with_move(move_data)
-      initial_pos = piece.current_position
-      final_pos = move_data[:position]
+      normal_positions(move)
     end
+  end
+
+  def castling_positions(move)
+    king_pos = active_king.current_position
+    initial_pos = king_pos
+    letter = king_side?(move) ? 'H' : 'A'
+    final_pos = "#{letter}#{king_pos[1]}"
+
+    { final_pos: final_pos, initial_pos: initial_pos }
+  end
+
+  def normal_positions(move)
+    move_data = extract_data(move)
+    piece = piece_with_move(move_data)
+    initial_pos = piece.current_position
+    final_pos = move_data[:position]
 
     { final_pos: final_pos, initial_pos: initial_pos }
   end
