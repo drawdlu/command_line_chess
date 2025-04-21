@@ -52,9 +52,11 @@ class Game
 
   def ask_for_move
     prompt_player
-    initial_pos = ask_for_move_position
-    piece = get_piece(initial_pos, @board)
-    final_pos = get_move_position(piece)
+    move = ask_for_move_position
+    move_data = extract_data(move)
+    piece = piece_with_move(move_data)
+    initial_pos = piece.current_position
+    final_pos = move_data[:position]
 
     { final_pos: final_pos, initial_pos: initial_pos }
   end
@@ -87,14 +89,14 @@ class Game
     move = ''
     while move == ''
       print 'MOVE: '
-      move = gets.chomp.upcase
+      move = gets.chomp
 
       break if valid_move?(move)
 
       move = ''
     end
 
-    move.upcase
+    move
   end
 
   def valid_move?(move)
@@ -104,10 +106,9 @@ class Game
     return false if move_data[:take] && @board.empty?(move[:position])
 
     piece = piece_with_move(move_data)
-
     return false if piece.nil?
 
-    valid_start?(move)
+    valid_start?(piece, piece.current_position) && valid_move_position?(piece, move_data[:position])
   end
 
   def valid_code?(move)
@@ -175,11 +176,23 @@ class Game
     piece_class = move_data[:class]
     partial_position = move_data[:piece_position]
 
+    valid_pieces = []
     pieces.each do |piece|
-      return piece if correct_piece?(piece, partial_position, piece_class, position)
+      valid_pieces.push(piece) if correct_piece?(piece, partial_position, piece_class, position)
     end
 
-    nil
+    length = valid_pieces.length
+
+    prompt_multiple_pieces(pieces) if length > 1
+
+    valid_pieces[0] if length == 1
+  end
+
+  def prompt_multiple_pieces(pieces)
+    pieces.each do |piece|
+      print "#{piece.current_position} "
+    end
+    print "can take that position. Please clarify which one to move.\n"
   end
 
   def correct_piece?(piece, partial_position, piece_class, position)
@@ -353,7 +366,6 @@ class Game
 
   def no_more_moves?
     get_pieces(@active_player.color).each do |piece|
-      print "#{piece.class} #{piece.valid_moves} #{piece.current_position}"
       return false if !piece.instance_of?(King) && !piece.valid_moves.empty?
     end
 
