@@ -161,13 +161,12 @@ describe Game do
     describe '#valid_start?' do
       context 'when in check moving King' do
         before do
-          opponent = board.board[2][4]
           game.instance_variable_set(:@board, board)
-          game.instance_variable_set(:@opponent_pieces_in_check, [opponent])
           game.instance_variable_set(:@active_player, active_player)
         end
 
         it 'will accept King position when it has a move not controlled by opponent' do
+          game.send(:update_opponent_pieces_in_check)
           king = board.board[7][4]
           result = game.send(:valid_start?, king, king_position)
           expect(result).to be_truthy
@@ -176,13 +175,12 @@ describe Game do
 
       context 'when in check moving Rook to protect' do
         before do
-          opponent = board.board[2][4]
           game.instance_variable_set(:@board, board)
-          game.instance_variable_set(:@opponent_pieces_in_check, [opponent])
           game.instance_variable_set(:@active_player, active_player)
         end
 
         it 'will accept Rook given that it can protect King' do
+          game.send(:update_opponent_pieces_in_check)
           rook = board.board[6][7]
           result = game.send(:valid_start?, rook, protect_rook)
           expect(result).to be_truthy
@@ -191,13 +189,12 @@ describe Game do
 
       context 'when in check moving Rook to eat Piece' do
         before do
-          opponent = board.board[2][4]
           game.instance_variable_set(:@board, board)
-          game.instance_variable_set(:@opponent_pieces_in_check, [opponent])
           game.instance_variable_set(:@active_player, active_player)
         end
 
         it 'will accept Rook position given that it can take opponent that has check on King' do
+          game.send(:update_opponent_pieces_in_check)
           rook = board.board[2][0]
           result = game.send(:valid_start?, rook, eat_rook)
           expect(result).to be_truthy
@@ -206,13 +203,12 @@ describe Game do
 
       context 'when in check moving Queen that can cover path to King' do
         before do
-          opponent = board.board[2][4]
           game.instance_variable_set(:@board, board)
-          game.instance_variable_set(:@opponent_pieces_in_check, [opponent])
           game.instance_variable_set(:@active_player, active_player)
         end
 
         it 'will accept Queen' do
+          game.send(:update_opponent_pieces_in_check)
           queen_piece = board.board[4][1]
           result = game.send(:valid_start?, queen_piece, queen)
           expect(result).to be_truthy
@@ -231,12 +227,11 @@ describe Game do
         end
         let(:board) { create_dummy(pieces) }
         before do
-          opponent = board.board[2][1]
           game.instance_variable_set(:@board, board)
-          game.instance_variable_set(:@opponent_pieces_in_check, [opponent])
           game.instance_variable_set(:@active_player, active_player)
         end
         it 'will return false' do
+          game.send(:update_opponent_pieces_in_check)
           king_position = 'B1'
           king = board.board[7][1]
           result = game.send(:valid_start?, king, king_position)
@@ -270,13 +265,12 @@ describe Game do
     describe '#valid_move_position?' do
       context 'when moving King out of opponent control' do
         before do
-          opponent = board.board[2][4]
           game.instance_variable_set(:@board, board)
-          game.instance_variable_set(:@opponent_pieces_in_check, [opponent])
           game.instance_variable_set(:@active_player, active_player)
         end
 
         it 'returns True' do
+          game.send(:update_opponent_pieces_in_check)
           king = board.board[7][4]
           result = game.send(:valid_move_position?, king, 'D1')
           expect(result).to be_truthy
@@ -285,13 +279,12 @@ describe Game do
 
       context 'when protecting King' do
         before do
-          opponent = board.board[2][4]
           game.instance_variable_set(:@board, board)
-          game.instance_variable_set(:@opponent_pieces_in_check, [opponent])
           game.instance_variable_set(:@active_player, active_player)
         end
 
         it 'returns True' do
+          game.send(:update_opponent_pieces_in_check)
           rook = board.board[6][7]
           result = game.send(:valid_move_position?, rook, 'E2')
           expect(result).to be_truthy
@@ -300,13 +293,12 @@ describe Game do
 
       context 'when taking opponent in that has check on King' do
         before do
-          opponent = board.board[2][4]
           game.instance_variable_set(:@board, board)
-          game.instance_variable_set(:@opponent_pieces_in_check, [opponent])
           game.instance_variable_set(:@active_player, active_player)
         end
 
         it 'returns True' do
+          game.send(:update_opponent_pieces_in_check)
           rook = board.board[2][0]
           result = game.send(:valid_move_position?, rook, 'E6')
           expect(result).to be_truthy
@@ -315,13 +307,12 @@ describe Game do
 
       context 'when just moving without protecting or taking' do
         before do
-          opponent = board.board[2][4]
           game.instance_variable_set(:@board, board)
-          game.instance_variable_set(:@opponent_pieces_in_check, [opponent])
           game.instance_variable_set(:@active_player, active_player)
         end
 
         it 'returns False' do
+          game.send(:update_opponent_pieces_in_check)
           rook = board.board[2][0]
           result = game.send(:valid_move_position?, rook, 'D6')
           expect(result).to be_falsy
