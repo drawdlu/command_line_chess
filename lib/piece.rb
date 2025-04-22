@@ -54,6 +54,30 @@ class Piece
     moves
   end
 
+  def all_moves(directions)
+    moves = Set[]
+    directions.each do |index|
+      next unless within_board?(@current_position, index[0], index[1])
+
+      move = move_pos(@current_position, index[0], index[1])
+
+      moves.add(move)
+    end
+
+    moves
+  end
+
+  def diagonal?(position)
+    x_distance = (@current_position[0].ord - position[0].ord).abs
+    y_distance = (@current_position[1].ord - position[1].ord).abs
+
+    x_distance == y_distance
+  end
+
+  def vertical_horizontal?(position)
+    @current_position[0] == position[0] || @current_position[1] == position[1]
+  end
+
   private
 
   def no_pieces_on_path?(position)
@@ -71,17 +95,6 @@ class Piece
     true
   end
 
-  def diagonal?(position)
-    x_distance = (@current_position[0].ord - position[0].ord).abs
-    y_distance = (@current_position[1].ord - position[1].ord).abs
-
-    x_distance == y_distance
-  end
-
-  def vertical_horizontal?(position)
-    @current_position[0] == position[0] || @current_position[1] == position[1]
-  end
-
   def empty_or_opponent?(position)
     @board.empty?(position) || opponent?(position)
   end
@@ -90,32 +103,10 @@ class Piece
     (a_index.ord - b_index.ord).abs
   end
 
-  def within_board?(position, x_direction, y_direction)
-    index = get_name_index(position)
-
-    x_index = index[:x] + x_direction
-    y_index = index[:y] + y_direction
-
-    within_range?(x_index) && within_range?(y_index)
-  end
-
   def possible_moves(directions)
     moves = all_moves(directions)
 
     moves.delete_if { |move| !empty_or_opponent?(move) }
-  end
-
-  def all_moves(directions)
-    moves = Set[]
-    directions.each do |index|
-      next unless within_board?(@current_position, index[0], index[1])
-
-      move = move_pos(@current_position, index[0], index[1])
-
-      moves.add(move)
-    end
-
-    moves
   end
 
   def valid_castling_move?(position)

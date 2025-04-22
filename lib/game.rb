@@ -323,7 +323,7 @@ class Game
     opponent_pieces = @active_player.color == :white ? @board.black_pieces : @board.white_pieces
 
     opponent_pieces.each do |piece|
-      return false if piece.valid_moves.include?(move)
+      return false if piece.valid_moves.include?(move) || piece_can_take_position(piece, move)
     end
 
     true
@@ -441,14 +441,43 @@ class Game
 
     king.valid_moves.each do |move|
       get_pieces(opponent_color).each do |piece|
-        if piece.valid_moves.include?(move)
+        if piece.valid_moves.include?(move) && @board.empty?(move)
           found.add(move)
+          break
+        elsif !@board.empty?(move)
+          found.add(move) if piece_can_take_position(piece, move)
           break
         end
       end
     end
 
     found == king.valid_moves
+  end
+
+  def piece_can_take_position(piece, position)
+    perimeter = positions_around(position)
+    if piece.instance_of?(Knight)
+      piece.all_moves(Knight::KNIGHT_MOVES).include?(position)
+    elsif piece.instance_of?(King)
+      piece.all_moves(King::KING_MOVES).include?(position)
+    elsif piece.instance_of?(Bishop)
+      piece.diagonal?(position) && piece.valid_moves.intersect?(perimeter) ||
+        piece.diagonal?(position) && perimeter.include?(piece.current_position)
+    elsif piece.instance_of?(Rook)
+      piece.vertical_horizontal?(position) && piece.valid_moves.intersect?(perimeter) ||
+        piece.vertical_horizontal?(position) && perimeter.include?(piece.current_position)
+    elsif piece.instance_of?(Pawn)
+      below_num = (position[1].to_i - 1).to_s
+      piece.diagonal?(position) &&
+        perimeter.include?(piece.current_position) &&
+        piece.current_position[1] == below_num
+    elsif piece.instance_of?(Queen)
+      if piece.diagonal?(position) || piece.vertical_horizontal?(position)
+        piece.valid_moves.intersect?(perimeter) || perimeter.include?(piece.current_position)
+      else
+        false
+      end
+    end
   end
 
   def opponent_color

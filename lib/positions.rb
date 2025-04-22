@@ -56,4 +56,26 @@ module Positions
       current_pos < move_to_pos ? -1 : 1
     end
   end
+
+  def within_board?(position, x_direction, y_direction)
+    index = get_name_index(position)
+
+    x_index = index[:x] + x_direction
+    y_index = index[:y] + y_direction
+
+    within_range?(x_index) && within_range?(y_index)
+  end
+
+  def positions_around(position)
+    around_pos = Set[]
+
+    King::KING_MOVES.each do |index|
+      next unless within_board?(position, index[0], index[1])
+
+      pos = move_pos(position, index[0], index[1])
+      around_pos.add(pos)
+    end
+
+    around_pos
+  end
 end
