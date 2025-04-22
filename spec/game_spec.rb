@@ -260,6 +260,29 @@ describe Game do
           expect(result).to be_falsy
         end
       end
+
+      context 'move a Queen to take Knight in check' do
+        let(:pieces) do
+          [{ color: :black, position: 'E8', class: King },
+           { color: :black, position: 'D8', class: Queen },
+           { color: :white, position: 'C7', class: Knight }]
+        end
+        let(:dummy_board) { create_dummy(pieces) }
+        let(:active_player) { Player.new(:black) }
+
+        before do
+          game.instance_variable_set(:@board, dummy_board)
+          game.instance_variable_set(:@active_player, active_player)
+        end
+
+        it 'will return true' do
+          game.send(:update_opponent_pieces_in_check)
+          queen = dummy_board.board[0][3]
+          queen_position = 'D8'
+          result = game.send(:valid_start?, queen, queen_position)
+          expect(result).to be_truthy
+        end
+      end
     end
 
     describe '#valid_move_position?' do
@@ -316,6 +339,29 @@ describe Game do
           rook = board.board[2][0]
           result = game.send(:valid_move_position?, rook, 'D6')
           expect(result).to be_falsy
+        end
+      end
+
+      context 'move a Queen to take Knight in check' do
+        let(:pieces) do
+          [{ color: :black, position: 'E8', class: King },
+           { color: :black, position: 'D8', class: Queen },
+           { color: :white, position: 'C7', class: Knight }]
+        end
+        let(:dummy_board) { create_dummy(pieces) }
+        let(:active_player) { Player.new(:black) }
+
+        before do
+          game.instance_variable_set(:@board, dummy_board)
+          game.instance_variable_set(:@active_player, active_player)
+        end
+
+        it 'will return true' do
+          game.send(:update_opponent_pieces_in_check)
+          queen = dummy_board.board[0][3]
+          knight_opponent = 'C7'
+          result = game.send(:valid_move_position?, queen, knight_opponent)
+          expect(result).to be_truthy
         end
       end
     end
@@ -565,48 +611,69 @@ describe Game do
         expect(result).to be_truthy
       end
     end
-  end
 
-  describe '#valid_castling?' do
-    let(:pieces) do
-      [{ color: :white, position: 'E1', class: King },
-       { color: :white, position: 'H1', class: Rook },
-       { color: :white, position: 'A1', class: Knight }]
-    end
-    let(:dummy_board) { create_dummy(pieces) }
-    let(:active_player) { Player.new(:white) }
-    context 'when king side and both pieces has not moved' do
+    context 'move a Queen to take Knight in check Qxc7' do
+      let(:pieces) do
+        [{ color: :black, position: 'E8', class: King },
+         { color: :black, position: 'D8', class: Queen },
+         { color: :white, position: 'C7', class: Knight }]
+      end
+      let(:dummy_board) { create_dummy(pieces) }
+      let(:active_player) { Player.new(:black) }
+
       before do
         game.instance_variable_set(:@board, dummy_board)
         game.instance_variable_set(:@active_player, active_player)
       end
+
       it 'will return true' do
-        result = game.send(:valid_castling?, '0-0')
+        game.send(:update_opponent_pieces_in_check)
+        result = game.send(:valid_move?, 'Qxc7')
         expect(result).to be_truthy
       end
     end
 
-    context 'when queen side and knight is in A1' do
-      before do
-        game.instance_variable_set(:@board, dummy_board)
-        game.instance_variable_set(:@active_player, active_player)
+    describe '#valid_castling?' do
+      let(:pieces) do
+        [{ color: :white, position: 'E1', class: King },
+         { color: :white, position: 'H1', class: Rook },
+         { color: :white, position: 'A1', class: Knight }]
       end
-      it 'will return false' do
-        result = game.send(:valid_castling?, '0-0-0')
-        expect(result).to be_falsy
+      let(:dummy_board) { create_dummy(pieces) }
+      let(:active_player) { Player.new(:white) }
+      context 'when king side and both pieces has not moved' do
+        before do
+          game.instance_variable_set(:@board, dummy_board)
+          game.instance_variable_set(:@active_player, active_player)
+        end
+        it 'will return true' do
+          result = game.send(:valid_castling?, '0-0')
+          expect(result).to be_truthy
+        end
       end
-    end
 
-    context 'when king side and rook has moved but still in H1' do
-      before do
-        game.instance_variable_set(:@board, dummy_board)
-        game.instance_variable_set(:@active_player, active_player)
+      context 'when queen side and knight is in A1' do
+        before do
+          game.instance_variable_set(:@board, dummy_board)
+          game.instance_variable_set(:@active_player, active_player)
+        end
+        it 'will return false' do
+          result = game.send(:valid_castling?, '0-0-0')
+          expect(result).to be_falsy
+        end
       end
-      it 'will return false' do
-        rook = dummy_board.board[7][7]
-        rook.instance_variable_set(:@moved, true)
-        result = game.send(:valid_castling?, '0-0-0')
-        expect(result).to be_falsy
+
+      context 'when king side and rook has moved but still in H1' do
+        before do
+          game.instance_variable_set(:@board, dummy_board)
+          game.instance_variable_set(:@active_player, active_player)
+        end
+        it 'will return false' do
+          rook = dummy_board.board[7][7]
+          rook.instance_variable_set(:@moved, true)
+          result = game.send(:valid_castling?, '0-0-0')
+          expect(result).to be_falsy
+        end
       end
     end
   end

@@ -292,7 +292,7 @@ class Game
     opponent_position = @opponent_pieces_in_check[0].current_position
     x_direction = get_direction(king_position[1], opponent_position[1])
     y_direction = get_direction(king_position[0], opponent_position[0])
-    active_king.directional_moves([{ x: x_direction, y: y_direction }])
+    active_king.directional_moves([{ x: x_direction, y: y_direction }]) + Set[opponent_position]
   end
 
   def valid_move_position?(piece, move)
@@ -315,7 +315,8 @@ class Game
   end
 
   def move_to_protect?(move)
-    squares_to_protect_king.include?(move)
+    squares_to_protect_king.include?(move) ||
+      @opponent_pieces_in_check[0].current_position == move
   end
 
   def not_opponent_controlled(move)
@@ -341,11 +342,11 @@ class Game
 
   def update_opponent_pieces_in_check
     check = []
-    ally_king = active_king
+    ally_king = active_king.current_position
     opponent_color = @active_player.color == :white ? :black : :white
 
     get_pieces(opponent_color).each do |piece|
-      check.push(piece) if piece.valid_moves.include?(ally_king.current_position)
+      check.push(piece) if piece.valid_moves.include?(ally_king)
     end
 
     @opponent_pieces_in_check = check
