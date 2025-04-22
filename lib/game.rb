@@ -17,6 +17,7 @@ class Game
   MOVES = { N: Knight, B: Bishop, R: Rook, Q: Queen, K: King }.freeze
 
   def initialize
+    prompt_instructions
     @board = Board.new
     @white = Player.new(:white)
     @black = Player.new(:black)
@@ -42,6 +43,27 @@ class Game
 
   private
 
+  def prompt_instructions
+    puts "Chess notations used in game:
+    e5 - Pawn to e5
+    dxc3 - Pawn on d takes c3
+    Na3 - Knight to a3
+    Nxd4 - Knight takes d4
+    Nbxd4 - Knight on b takes d4 (this is only essential when 2 of your Knights can take that spot)
+    Nbd4 - Knight on b to d4 (again, this is only needed when 2 of your Knights can go to that spot)
+    0-0 or O-O - King side castling
+    0-0-0 or O-O-O - Queen side castling
+
+    Legend: R - Rook | N - Knight | B - Bishop | Q - Queen | K - King
+
+    Remember that letter case is important when entering a move\n\n"
+  end
+
+  def legend
+    "Legend: R - Rook | N - Knight | B - Bishop | Q - Queen | K - King
+          x - take opponent\n\n"
+  end
+
   def prompt_check
     print "You are in CHECK\n"
   end
@@ -52,6 +74,7 @@ class Game
 
   def ask_for_move
     prompt_player
+    print legend
     move = ask_for_move_position
 
     if king_side?(move) || queen_side?(move)

@@ -219,7 +219,3 @@ class Board
       piece.valid_moves.include?(@last_move[:to])
   end
 end
-
-test = Board.new
-
-puts test
