@@ -153,6 +153,8 @@ class Game
   end
 
   def valid_castling?(move)
+    return false unless @opponent_pieces_in_check.empty?
+
     if king_side?(move)
       valid_castling_side?('H')
     elsif queen_side?(move)
