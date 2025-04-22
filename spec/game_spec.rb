@@ -9,7 +9,7 @@ require_relative '../lib/bishop'
 require_relative '../lib/knight'
 
 describe Game do
-  # $stdout = File.open(File::NULL, 'w')
+  $stdout = File.open(File::NULL, 'w')
   subject(:game) { described_class.new }
   describe '#valid_position?' do
     context 'when A8 is entered' do
@@ -417,6 +417,26 @@ describe Game do
         expect(result).to be_truthy
       end
     end
+
+    context 'when in checkmate where opponents control all moves including King taking a piece' do
+      let(:pieces) do
+        [{ color: :black, position: 'E8', class: King },
+         { color: :black, position: 'D8', class: Queen },
+         { color: :black, position: 'D7', class: Pawn },
+         { color: :white, position: 'F7', class: Queen },
+         { color: :white, position: 'C4', class: Bishop }]
+      end
+      let(:dummy_board) { create_dummy(pieces) }
+      let(:active_player) { Player.new(:black) }
+      before do
+        game.instance_variable_set(:@board, dummy_board)
+        game.instance_variable_set(:@active_player, active_player)
+      end
+      it 'will return True' do
+        result = game.send(:checkmate?)
+        expect(result).to be_truthy
+      end
+    end
   end
 
   describe '#valid_code?' do
@@ -806,6 +826,28 @@ describe Game do
         rook.instance_variable_set(:@moved, true)
         result = game.send(:valid_castling?, '0-0-0')
         expect(result).to be_falsy
+      end
+    end
+  end
+
+  describe '#opponent_controls_king_moves?' do
+    context 'when in checkmate where opponents control all moves including King taking a piece' do
+      let(:pieces) do
+        [{ color: :black, position: 'E8', class: King },
+         { color: :black, position: 'D8', class: Queen },
+         { color: :black, position: 'D7', class: Pawn },
+         { color: :white, position: 'F7', class: Queen },
+         { color: :white, position: 'C4', class: Bishop }]
+      end
+      let(:dummy_board) { create_dummy(pieces) }
+      let(:active_player) { Player.new(:black) }
+      before do
+        game.instance_variable_set(:@board, dummy_board)
+        game.instance_variable_set(:@active_player, active_player)
+      end
+      it 'will return True' do
+        result = game.send(:opponent_controls_king_moves?)
+        expect(result).to be_truthy
       end
     end
   end

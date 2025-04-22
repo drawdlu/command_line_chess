@@ -445,8 +445,10 @@ class Game
           found.add(move)
           break
         elsif !@board.empty?(move)
-          found.add(move) if piece_can_take_position(piece, move)
-          break
+          if piece_can_take_position(piece, move)
+            found.add(move)
+            break
+          end
         end
       end
     end
