@@ -1,0 +1,322 @@
+--- !ruby/object:Game
+board: &1 !ruby/object:Board
+  board:
+  - - &2 !ruby/object:Rook
+      color: :black
+      current_position: A8
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash: {}
+      moved: false
+    - &3 !ruby/object:Knight
+      color: :black
+      current_position: B8
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          C6: true
+          A6: true
+    - &4 !ruby/object:Bishop
+      color: :black
+      current_position: C8
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash: {}
+    - &5 !ruby/object:Queen
+      color: :black
+      current_position: D8
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash: {}
+    - &6 !ruby/object:King
+      color: :black
+      current_position: E8
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash: {}
+      moved: false
+    - &7 !ruby/object:Bishop
+      color: :black
+      current_position: F8
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash: {}
+    - &8 !ruby/object:Knight
+      color: :black
+      current_position: G8
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          H6: true
+          F6: true
+    - &9 !ruby/object:Rook
+      color: :black
+      current_position: H8
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash: {}
+      moved: false
+  - - &10 !ruby/object:Pawn
+      color: :black
+      current_position: A7
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          A6: true
+          A5: true
+    - &11 !ruby/object:Pawn
+      color: :black
+      current_position: B7
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          B6: true
+          B5: true
+    - &12 !ruby/object:Pawn
+      color: :black
+      current_position: C7
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          C6: true
+          C5: true
+    - &13 !ruby/object:Pawn
+      color: :black
+      current_position: D7
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          D6: true
+          D5: true
+    - &14 !ruby/object:Pawn
+      color: :black
+      current_position: E7
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          E6: true
+          E5: true
+    - &15 !ruby/object:Pawn
+      color: :black
+      current_position: F7
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          F6: true
+          F5: true
+    - &16 !ruby/object:Pawn
+      color: :black
+      current_position: G7
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          G6: true
+          G5: true
+    - &17 !ruby/object:Pawn
+      color: :black
+      current_position: H7
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          H6: true
+          H5: true
+  - -
+    -
+    -
+    -
+    -
+    -
+    -
+    -
+  - -
+    -
+    -
+    -
+    -
+    -
+    -
+    -
+  - -
+    -
+    -
+    -
+    -
+    -
+    -
+    -
+  - -
+    -
+    -
+    -
+    -
+    -
+    -
+    - &32 !ruby/object:Knight
+      color: :white
+      current_position: H3
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          F4: true
+          G1: true
+          G5: true
+  - - &18 !ruby/object:Pawn
+      color: :white
+      current_position: A2
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          A3: true
+          A4: true
+    - &19 !ruby/object:Pawn
+      color: :white
+      current_position: B2
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          B3: true
+          B4: true
+    - &20 !ruby/object:Pawn
+      color: :white
+      current_position: C2
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          C3: true
+          C4: true
+    - &21 !ruby/object:Pawn
+      color: :white
+      current_position: D2
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          D3: true
+          D4: true
+    - &22 !ruby/object:Pawn
+      color: :white
+      current_position: E2
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          E3: true
+          E4: true
+    - &23 !ruby/object:Pawn
+      color: :white
+      current_position: F2
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          F3: true
+          F4: true
+    - &24 !ruby/object:Pawn
+      color: :white
+      current_position: G2
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          G3: true
+          G4: true
+    - &25 !ruby/object:Pawn
+      color: :white
+      current_position: H2
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash: {}
+  - - &26 !ruby/object:Rook
+      color: :white
+      current_position: A1
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash: {}
+      moved: false
+    - &27 !ruby/object:Knight
+      color: :white
+      current_position: B1
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          C3: true
+          A3: true
+    - &28 !ruby/object:Bishop
+      color: :white
+      current_position: C1
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash: {}
+    - &29 !ruby/object:Queen
+      color: :white
+      current_position: D1
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash: {}
+    - &30 !ruby/object:King
+      color: :white
+      current_position: E1
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash: {}
+      moved: false
+    - &31 !ruby/object:Bishop
+      color: :white
+      current_position: F1
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash: {}
+    -
+    - &33 !ruby/object:Rook
+      color: :white
+      current_position: H1
+      board: *1
+      valid_moves: !ruby/object:Set
+        hash:
+          G1: true
+      moved: false
+  black_pieces: !ruby/object:Set
+    hash:
+      *2 : true
+      *3 : true
+      *4 : true
+      *5 : true
+      *6 : true
+      *7 : true
+      *8 : true
+      *9 : true
+      *10 : true
+      *11 : true
+      *12 : true
+      *13 : true
+      *14 : true
+      *15 : true
+      *16 : true
+      *17 : true
+  white_pieces: !ruby/object:Set
+    hash:
+      *18 : true
+      *19 : true
+      *20 : true
+      *21 : true
+      *22 : true
+      *23 : true
+      *24 : true
+      *25 : true
+      *26 : true
+      *27 : true
+      *28 : true
+      *29 : true
+      *30 : true
+      *31 : true
+      *32 : true
+      *33 : true
+  last_move:
+    :from: G1
+    :to: H3
+    :piece: *32
+white: !ruby/object:Player
+  name: white
+  color: :white
+black: &34 !ruby/object:Player
+  name: black
+  color: :black
+active_player: *34
+win_draw:
+opponent_pieces_in_check: []

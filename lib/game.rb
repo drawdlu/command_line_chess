@@ -9,6 +9,7 @@ require_relative 'knight'
 require_relative 'bishop'
 require_relative 'queen'
 require_relative 'pawn'
+require 'yaml'
 
 # Controls game loop and special conditions
 class Game
@@ -35,6 +36,8 @@ class Game
       prompt_check if check?
 
       move = ask_for_move
+      break if move.nil?
+
       apply_move(move[:initial_pos], move[:final_pos])
       update_active_player
     end
@@ -42,6 +45,16 @@ class Game
   end
 
   private
+
+  def announce_outcome
+    if @win_draw.nil?
+      puts 'Game reached STALEMATE'
+    else
+      player = @active_player == @white ? @black : @white
+      puts 'CHECKMATE!!'
+      puts "#{player.name} HAS WON THE GAME!"
+    end
+  end
 
   def prompt_instructions
     puts "Chess notations used in game:
@@ -73,15 +86,51 @@ class Game
   end
 
   def ask_for_move
+    prompt_saving
     prompt_player
     print legend
     move = ask_for_move_position
 
     if king_side?(move) || queen_side?(move)
       castling_positions(move)
+    elsif save?(move)
+      save
     else
       normal_positions(move)
     end
+  end
+
+  def prompt_saving
+    puts "Type 'save' if you want to save current game.\n\n"
+  end
+
+  def save
+    file_name = choose_name
+    create_save_directory
+    save_to_file(file_name)
+    puts 'Successfully saved the game'
+  end
+
+  def choose_name
+    puts
+    print 'Type a file name for your save file: '
+    gets.chomp
+  end
+
+  def create_save_directory
+    Dir.mkdir 'assets/saves' unless Dir.exist? 'assets/saves'
+  end
+
+  def save_to_file(file_name)
+    serialized = YAML.dump self
+    file = if File.exist?("assets/saves/#{file_name}.yaml")
+             File.open("assets/saves/#{file_name}.yaml", 'w')
+
+           else
+             File.new("assets/saves/#{file_name}.yaml", 'w')
+           end
+    file.write(serialized)
+    file.close
   end
 
   def castling_positions(move)
@@ -132,12 +181,16 @@ class Game
       print 'MOVE: '
       move = gets.chomp
 
-      break if valid_move?(move) || valid_castling?(move)
+      break if valid_move?(move) || valid_castling?(move) || save?(move)
 
       move = ''
     end
 
     move
+  end
+
+  def save?(move)
+    'SAVE'.include?(move.upcase)
   end
 
   def valid_move?(move)
@@ -401,18 +454,9 @@ class Game
     end
   end
 
-  def announce_outcome
-    if @win_draw.nil?
-      puts 'Game reached STALEMATE'
-    else
-      player = @active_player == @white ? @black : @white
-      puts 'CHECKMATE!!'
-      puts "#{player.name} HAS WON THE GAME!"
-    end
-  end
-
   def win_draw_condition?
     if stalemate?
+      @win_draw = :draw
       return true
     elsif checkmate?
       @win_draw = :checkmate
