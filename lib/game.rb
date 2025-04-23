@@ -44,6 +44,18 @@ class Game
     announce_outcome
   end
 
+  def valid_move?(move)
+    return false unless valid_code?(move)
+
+    move_data = extract_data(move)
+    return false unless taking_opponent_valid?(move_data)
+
+    piece = piece_with_move(move_data)
+    return false if piece.nil?
+
+    valid_start?(piece, piece.current_position) && valid_move_position?(piece, move_data[:position])
+  end
+
   private
 
   def announce_outcome
@@ -191,18 +203,6 @@ class Game
 
   def save?(move)
     'SAVE'.include?(move.upcase)
-  end
-
-  def valid_move?(move)
-    return false unless valid_code?(move)
-
-    move_data = extract_data(move)
-    return false unless taking_opponent_valid?(move_data)
-
-    piece = piece_with_move(move_data)
-    return false if piece.nil?
-
-    valid_start?(piece, piece.current_position) && valid_move_position?(piece, move_data[:position])
   end
 
   def valid_castling?(move)
