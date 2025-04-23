@@ -288,12 +288,47 @@ class Game
     if check_num.positive?
       return ally_king.current_position == position if check_num > 1
 
-      return initial_could_remove_check?(position)
+      initial_could_remove_check?(position)
     elsif piece.instance_of?(King)
-      return !opponent_controls_king_moves?
+      !opponent_controls_king_moves?
+    else
+      does_not_result_in_check?(piece)
+    end
+  end
+
+  def does_not_result_in_check?(piece)
+    opponent_pieces = if @active_player.color == :white
+                        get_pieces(:black)
+                      else
+                        get_pieces(:white)
+                      end
+
+    !opens_path_to_king?(piece, opponent_pieces)
+  end
+
+  # if piece is moved
+  def opens_path_to_king?(piece, opponent_pieces)
+    position = piece.current_position
+
+    return false unless piece.diagonal?(position) || piece.vertical_horizontal?(position)
+
+    king_position = active_king.current_position
+    direction_to_king = [get_direction(position[1], king_position[1]),
+                         get_direction(position[0], king_position[0])]
+
+    position = piece.current_position
+
+    opponent_pieces.each do |opponent|
+      next unless opponent.valid_moves.include?(position)
+
+      opponent_position = opponent.current_position
+      direction_to_position = [get_direction(opponent_position[1], position[1]),
+                               get_direction(opponent_position[0], position[0])]
+
+      return true if direction_to_king == direction_to_position
     end
 
-    true
+    false
   end
 
   def initial_could_remove_check?(position)
