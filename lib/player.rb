@@ -15,7 +15,7 @@ class Player
     name = ''
 
     while name == ''
-      print "Enter player name for #{color.upcase} pieces: "
+      print "\nEnter player name for #{color.upcase} pieces: "
       name = gets.chomp
     end
 

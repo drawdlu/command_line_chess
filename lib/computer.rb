@@ -6,14 +6,16 @@ require_relative 'notation'
 class Computer
   include Notation
 
-  def initialize(board, game)
+  attr_reader :name, :color
+
+  def initialize(game)
+    @name = 'Computer'
     @color = :black
-    @board = board
     @game = game
   end
 
   def pick_random_move
-    pieces = @board.black_pieces.to_a.shuffle
+    pieces = @game.board.black_pieces.to_a.shuffle
     move = nil
     piece = nil
     notation = nil
@@ -23,30 +25,27 @@ class Computer
         piece = black_piece
         move = position
         notation = convert_to_notation(piece, move)
-        break if @game.valid_move?(notation)
+        return notation if @game.valid_move?(notation)
       end
-      break unless move.nil?
     end
-
-    notation
   end
 
   def convert_to_notation(piece, move)
     notation = move.downcase.split('')
-    takes = @board.empty?(move) ? '' : 'x'
-    piece_class = get_class(piece)
+    takes = @game.board.empty?(move) ? '' : 'x'
+    piece_class = get_class(piece, move)
     notation.unshift(takes)
     notation.unshift(piece_class)
 
     notation.join
   end
 
-  def get_class(piece)
+  def get_class(piece, move)
     piece_class = piece.class
     Game::MOVES.each_key do |key|
       return key.to_s if Game::MOVES[key] == piece_class
     end
 
-    ''
+    @game.board.empty?(move) ? '' : piece.current_position[0].downcase
   end
 end

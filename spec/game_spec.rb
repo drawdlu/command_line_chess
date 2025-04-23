@@ -10,7 +10,9 @@ require_relative '../lib/knight'
 
 describe Game do
   $stdout = File.open(File::NULL, 'w')
-  subject(:game) { described_class.new }
+  let(:board) { Board.new }
+  let(:player) { Player.new(:white) }
+  subject(:game) { described_class.new(board, player) }
   describe '#valid_position?' do
     context 'when A8 is entered' do
       it 'returns True' do

@@ -1,4 +1,7 @@
 require_relative 'lib/game'
+require_relative 'lib/player'
+require_relative 'lib/computer'
+require_relative 'lib/board'
 
 def play_game
   loop do
@@ -7,8 +10,15 @@ def play_game
     if available_load_file && yes?("\nWould you like to load a file? : ")
       file_name = choose_file
       game = load_save(file_name)
+    elsif yes?("\nWould you like to play against the Computer? : ")
+      board = Board.new
+      white = Player.new(:white)
+      game = Game.new(board, white)
     else
-      game = Game.new
+      board = Board.new
+      white = Player.new(:white)
+      black = Player.new(:black)
+      game = Game.new(board, white, black)
     end
 
     game.start

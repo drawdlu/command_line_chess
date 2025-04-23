@@ -10,6 +10,7 @@ require_relative 'bishop'
 require_relative 'queen'
 require_relative 'pawn'
 require_relative 'notation'
+require_relative 'computer'
 require 'yaml'
 
 # Controls game loop and special conditions
@@ -17,11 +18,13 @@ class Game
   include Positions
   include Notation
 
-  def initialize
+  attr_reader :board
+
+  def initialize(board, white, black = Computer.new(self))
     prompt_instructions
-    @board = Board.new
-    @white = Player.new(:white)
-    @black = Player.new(:black)
+    @board = board
+    @white = white
+    @black = black
     @active_player = @white
     @win_draw = nil
     @opponent_pieces_in_check = []
@@ -98,10 +101,15 @@ class Game
   end
 
   def ask_for_move
-    prompt_saving
-    prompt_player
-    print legend
-    move = ask_for_move_position
+    if @active_player.instance_of?(Computer)
+      prompt_player
+      move = @active_player.pick_random_move
+    else
+      prompt_saving
+      prompt_player
+      print legend
+      move = ask_for_move_position
+    end
 
     if king_side?(move) || queen_side?(move)
       castling_positions(move)
@@ -255,14 +263,14 @@ class Game
 
     length = valid_pieces.length
 
-    prompt_multiple_pieces(pieces) if length > 1
+    prompt_multiple_pieces(valid_pieces) if length > 1
 
     valid_pieces[0] if length == 1
   end
 
   def prompt_multiple_pieces(pieces)
     pieces.each do |piece|
-      print "#{piece.current_position} "
+      print "#{piece.class} at #{piece.current_position} "
     end
     print "can take that position. Please clarify which one to move.\n"
   end
