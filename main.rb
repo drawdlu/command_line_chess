@@ -4,6 +4,7 @@ require_relative 'lib/computer'
 require_relative 'lib/board'
 
 def play_game
+  prompt_instructions
   loop do
     available_load_file = Dir.exist?('assets/saves') || false
 
@@ -76,6 +77,22 @@ def yes?(prompt)
   end
 
   %w[yes y].include?(response)
+end
+
+def prompt_instructions
+  puts "Chess notations used in game:
+    e5 - Pawn to e5
+    dxc3 - Pawn on d takes c3
+    Na3 - Knight to a3
+    Nxd4 - Knight takes d4
+    Nbxd4 - Knight on b takes d4
+    Nbd4 - Knight on b to d4
+    0-0 or O-O - King side castling
+    0-0-0 or O-O-O - Queen side castling
+
+    Legend: R - Rook | N - Knight | B - Bishop | Q - Queen | K - King
+
+    Remember that letter case is important when entering a move\n\n"
 end
 
 play_game

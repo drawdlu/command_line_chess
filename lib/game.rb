@@ -21,7 +21,6 @@ class Game
   attr_reader :board
 
   def initialize(board, white, black = Computer.new(self))
-    prompt_instructions
     @board = board
     @white = white
     @black = black
@@ -69,22 +68,6 @@ class Game
       puts 'CHECKMATE!!'
       puts "#{player.name} HAS WON THE GAME!"
     end
-  end
-
-  def prompt_instructions
-    puts "Chess notations used in game:
-    e5 - Pawn to e5
-    dxc3 - Pawn on d takes c3
-    Na3 - Knight to a3
-    Nxd4 - Knight takes d4
-    Nbxd4 - Knight on b takes d4 (this is only essential when 2 of your Knights can take that spot)
-    Nbd4 - Knight on b to d4 (again, this is only needed when 2 of your Knights can go to that spot)
-    0-0 or O-O - King side castling
-    0-0-0 or O-O-O - Queen side castling
-
-    Legend: R - Rook | N - Knight | B - Bishop | Q - Queen | K - King
-
-    Remember that letter case is important when entering a move\n\n"
   end
 
   def legend
@@ -286,7 +269,7 @@ class Game
   def valid_start?(piece, position)
     check_num = @opponent_pieces_in_check.length
     if check_num.positive?
-      return ally_king.current_position == position if check_num > 1
+      return active_king.current_position == position if check_num > 1
 
       initial_could_remove_check?(position)
     elsif piece.instance_of?(King)
@@ -319,7 +302,10 @@ class Game
     position = piece.current_position
 
     opponent_pieces.each do |opponent|
-      next unless opponent.valid_moves.include?(position)
+      unless opponent.valid_moves.include?(position) &&
+             !(piece.instance_of?(Knight) || piece.instance_of?(Pawn) || piece.instance_of?(King))
+        next
+      end
 
       opponent_position = opponent.current_position
       direction_to_position = [get_direction(opponent_position[1], position[1]),
