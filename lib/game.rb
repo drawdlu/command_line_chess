@@ -236,9 +236,13 @@ class Game
   end
 
   def promote_if_pawn(piece)
-    return unless piece.instance_of?(Pawn)
+    return unless piece.instance_of?(Pawn) && piece.last_row?
 
-    piece.promote if piece.last_row?
+    if @active_player.instance_of?(Computer)
+      piece.promote('QUEEN')
+    else
+      piece.promote
+    end
   end
 
   # the only move where you can pick an ally to move to is Castling

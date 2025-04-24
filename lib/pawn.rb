@@ -33,8 +33,8 @@ class Pawn < Piece
     @current_position = position
   end
 
-  def promote
-    piece_class = convert_to_class(prompt_for_promote_piece)
+  def promote(input = prompt_for_promote_piece)
+    piece_class = convert_to_class(input)
     piece = create_piece_with_valid_moves(piece_class)
     put_piece_on_board(piece)
     remove_pawn_from_list
