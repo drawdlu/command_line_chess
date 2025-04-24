@@ -8,14 +8,14 @@ class Computer
 
   attr_reader :name, :color
 
-  def initialize(game)
-    @name = 'Computer'
-    @color = :black
+  def initialize(game, color)
+    @name = color.to_s
+    @color = color
     @game = game
   end
 
   def pick_random_move
-    pieces = @game.board.black_pieces.to_a.shuffle
+    pieces = color == :black ? @game.board.black_pieces.to_a.shuffle : @game.board.white_pieces.to_a.shuffle
     move = nil
     piece = nil
     notation = nil

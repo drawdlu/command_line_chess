@@ -13,8 +13,7 @@ def play_game
       game = load_save(file_name)
     elsif yes?("\nWould you like to play against the Computer? : ")
       board = Board.new
-      white = Player.new(:white)
-      game = Game.new(board, white)
+      game = Game.new(board)
     else
       board = Board.new
       white = Player.new(:white)

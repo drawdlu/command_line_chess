@@ -9,7 +9,7 @@ require_relative '../lib/bishop'
 require_relative '../lib/knight'
 
 describe Game do
-  $stdout = File.open(File::NULL, 'w')
+  # $stdout = File.open(File::NULL, 'w')
   let(:board) { Board.new }
   let(:player) { Player.new(:white) }
   subject(:game) { described_class.new(board, player) }
@@ -439,6 +439,32 @@ describe Game do
         expect(result).to be_truthy
       end
     end
+
+    context 'when not in checkmate' do
+      let(:pieces) do
+        [{ color: :black, position: 'B6', class: Rook },
+         { color: :black, position: 'D7', class: King },
+         { color: :black, position: 'D6', class: Pawn },
+         { color: :black, position: 'C5', class: Pawn },
+         { color: :black, position: 'B4', class: Pawn },
+         { color: :black, position: 'F5', class: Bishop },
+         { color: :white, position: 'D5', class: Pawn },
+         { color: :white, position: 'C4', class: Pawn },
+         { color: :white, position: 'C7', class: Rook }]
+      end
+      let(:dummy_board) { create_dummy(pieces) }
+      let(:active_player) { Player.new(:black) }
+      before do
+        rook = dummy_board.board[1][2]
+        game.instance_variable_set(:@opponent_pieces_in_check, [rook])
+        game.instance_variable_set(:@board, dummy_board)
+        game.instance_variable_set(:@active_player, active_player)
+      end
+      it 'will return False' do
+        result = game.send(:checkmate?)
+        expect(result).to be_falsy
+      end
+    end
   end
 
   describe '#valid_code?' do
@@ -849,6 +875,17 @@ describe Game do
       end
       it 'will return True' do
         result = game.send(:opponent_controls_king_moves?)
+        expect(result).to be_truthy
+      end
+    end
+  end
+
+  describe '#piece_can_take_position' do
+    context 'when an opponent Pawn can take king move' do
+      it 'will return true' do
+        board = game.instance_variable_get(:@board)
+        pawn = board.board[6][1]
+        result = game.send(:piece_can_take_position, pawn, 'C3')
         expect(result).to be_truthy
       end
     end

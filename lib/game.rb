@@ -20,7 +20,7 @@ class Game
 
   attr_reader :board
 
-  def initialize(board, white, black = Computer.new(self))
+  def initialize(board, white = Computer.new(self, :white), black = Computer.new(self, :black))
     @board = board
     @white = white
     @black = black
@@ -87,6 +87,7 @@ class Game
     if @active_player.instance_of?(Computer)
       prompt_player
       move = @active_player.pick_random_move
+      print "#{move}\n"
     else
       prompt_saving
       prompt_player
@@ -262,8 +263,7 @@ class Game
     return false if !partial_position.nil? && !piece.current_position.include?(partial_position)
 
     piece.instance_of?(piece_class) &&
-      piece.valid_moves.include?(position) &&
-      valid_start?(piece, piece.current_position)
+      piece.valid_moves.include?(position)
   end
 
   def valid_start?(piece, position)
@@ -481,7 +481,12 @@ class Game
 
     king.valid_moves.each do |move|
       get_pieces(opponent_color).each do |piece|
-        if piece.valid_moves.include?(move) && @board.empty?(move)
+        if piece.instance_of?(Pawn)
+          if piece_can_take_position(piece, move)
+            found.add(move)
+            break
+          end
+        elsif piece.valid_moves.include?(move) && @board.empty?(move)
           found.add(move)
           break
         elsif !@board.empty?(move)
@@ -509,10 +514,11 @@ class Game
       piece.vertical_horizontal?(position) && piece.valid_moves.intersect?(perimeter) ||
         piece.vertical_horizontal?(position) && perimeter.include?(piece.current_position)
     elsif piece.instance_of?(Pawn)
-      below_num = (position[1].to_i - 1).to_s
+      direction = piece.color == :white ? 1 : -1
+      forward_num = (piece.current_position[1].to_i + direction).to_s
       piece.diagonal?(position) &&
         perimeter.include?(piece.current_position) &&
-        piece.current_position[1] == below_num
+        position[1] == forward_num
     elsif piece.instance_of?(Queen)
       if piece.diagonal?(position) || piece.vertical_horizontal?(position)
         piece.valid_moves.intersect?(perimeter) || perimeter.include?(piece.current_position)
