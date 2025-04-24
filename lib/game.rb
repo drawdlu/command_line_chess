@@ -231,7 +231,14 @@ class Game
       board_to_apply.update_last_move(initial_pos, final_pos, piece)
     end
 
+    promote_if_pawn(piece) if @board == board_to_apply
     board_to_apply.update_valid_moves
+  end
+
+  def promote_if_pawn(piece)
+    return unless piece.instance_of?(Pawn)
+
+    piece.promote if piece.last_row?
   end
 
   # the only move where you can pick an ally to move to is Castling
@@ -310,10 +317,10 @@ class Game
 
   def win_draw_condition?
     if checkmate?
-      @win_draw = :stalemate
+      @win_draw = :checkmate
       return true
     elsif stalemate?
-      @win_draw = :checkmate
+      @win_draw = :stalemate
       return true
     elsif two_kings_left
       @win_draw = :draw

@@ -10,7 +10,7 @@ class Computer
   attr_reader :name, :color
 
   def initialize(game, color)
-    @name = color.to_s
+    @name = "#{color.to_s.capitalize} Computer"
     @color = color
     @game = game
   end
@@ -26,7 +26,6 @@ class Computer
         piece = black_piece
         move = position
         notation = convert_to_notation(piece, move)
-        puts notation
         return notation if @game.valid_move?(notation)
       end
     end

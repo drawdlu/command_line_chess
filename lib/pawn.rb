@@ -20,6 +20,7 @@ class Pawn < Piece
     # forward movement along y_index
     direction = @color == :white ? -1 : 1
     current_index = get_name_index(@current_position)
+    return Set[] unless within_range?(current_index[:x] + direction)
 
     forward = get_forward_move(current_index[:x], current_index[:y], direction)
     diagonal_moves = get_diagonal_moves(current_index[:x], current_index[:y], direction)
@@ -30,8 +31,19 @@ class Pawn < Piece
 
   def update_position(position)
     @current_position = position
+  end
 
-    promote if last_row?
+  def promote
+    piece_class = convert_to_class(prompt_for_promote_piece)
+    piece = create_piece_with_valid_moves(piece_class)
+    put_piece_on_board(piece)
+    remove_pawn_from_list
+  end
+
+  def last_row?
+    last_row = @color == :white ? '8' : '1'
+
+    @current_position[1] == last_row
   end
 
   private
@@ -103,19 +115,6 @@ class Pawn < Piece
       last_move[:to][1].to_i == initial_num + direction
   end
 
-  def promote
-    piece_class = convert_to_class(prompt_for_promote_piece)
-    piece = create_piece_with_valid_moves(piece_class)
-    put_piece_on_board(piece)
-    remove_pawn_from_list
-  end
-
-  def last_row?
-    last_row = @color == :white ? '8' : '1'
-
-    @current_position[1] == last_row
-  end
-
   def create_piece_with_valid_moves(piece)
     new_piece = piece.new(@color, @current_position, @board)
     new_piece.change_valid_moves
@@ -139,21 +138,22 @@ class Pawn < Piece
   end
 
   def prompt_for_promote_piece
-    result = ''
+    result = 'not'
 
     choices = %w[KNIGHT ROOK BISHOP QUEEN]
 
-    until choices.join(' ').include?(result.upcase) && result != ''
+    loop do
       print 'Enter promotion choice between '
       choices.each do |piece|
         print "#{piece} "
       end
       print ': '
 
-      result = gets.chomp
+      result = gets.chomp.upcase
+      break if choices.join(' ').include?(result)
     end
 
-    result.upcase
+    result
   end
 
   def convert_to_class(input)
