@@ -1,6 +1,7 @@
 require_relative 'board'
 require_relative 'game'
 require_relative 'notation'
+require_relative 'pawn'
 
 # handles computer choosing a move
 class Computer
@@ -25,6 +26,7 @@ class Computer
         piece = black_piece
         move = position
         notation = convert_to_notation(piece, move)
+        puts notation
         return notation if @game.valid_move?(notation)
       end
     end
@@ -34,7 +36,13 @@ class Computer
     notation = move.downcase.split('')
     takes = @game.board.empty?(move) ? '' : 'x'
     piece_class = get_class(piece, move)
+    partial_position = piece.current_position[0].downcase
     notation.unshift(takes)
+    unless piece.instance_of?(Pawn) ||
+           notation.include?(partial_position) ||
+           piece.instance_of?(King)
+      notation.unshift(partial_position)
+    end
     notation.unshift(piece_class)
 
     notation.join

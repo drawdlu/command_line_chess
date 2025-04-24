@@ -23,6 +23,7 @@ class Board
     @white_pieces = Set[]
     @last_move = nil
     populate_board
+    update_valid_moves
   end
 
   def empty?(position)
@@ -57,6 +58,17 @@ class Board
     update_piece_position(rook_index, final_rook_index)
     move_piece(king_index, final_king_index)
     move_piece(rook_index, final_rook_index)
+  end
+
+  def check?(color)
+    king_pos = king_position(color)
+    opponent_pieces = color == :white ? black_pieces : white_pieces
+
+    opponent_pieces.each do |piece|
+      return true if piece.valid_moves.include?(king_pos)
+    end
+
+    false
   end
 
   private
@@ -217,5 +229,13 @@ class Board
   def includes_last_move(piece)
     piece.valid_moves.include?(@last_move[:from]) ||
       piece.valid_moves.include?(@last_move[:to])
+  end
+
+  def king_position(color)
+    pieces = color == :white ? white_pieces : black_pieces
+
+    pieces.each do |piece|
+      return piece.current_position if piece.instance_of?(King)
+    end
   end
 end

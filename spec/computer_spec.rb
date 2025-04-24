@@ -11,7 +11,7 @@ require_relative '../lib/knight'
 describe Computer do
   let(:board) { Board.new }
   let(:game) { instance_double(Game) }
-  subject(:computer) { described_class.new(game) }
+  subject(:computer) { described_class.new(game, :white) }
 
   describe '#convert_to_notation' do
     context 'when Pawn to A3 is entered' do
@@ -33,12 +33,12 @@ describe Computer do
         game.instance_variable_set(:@board, board)
         allow(game).to receive(:board).and_return(board)
       end
-      it 'will return a3' do
+      it 'will return Nba3' do
         board = game.instance_variable_get(:@board)
         piece = board.board[7][1]
         move = 'A3'
         result = computer.convert_to_notation(piece, move)
-        expect(result).to eq('Na3')
+        expect(result).to eq('Nba3')
       end
     end
 
@@ -53,7 +53,7 @@ describe Computer do
         piece = board.board[7][6]
         move = 'F3'
         result = computer.convert_to_notation(piece, move)
-        expect(result).to eq('Nf3')
+        expect(result).to eq('Ngf3')
       end
     end
   end

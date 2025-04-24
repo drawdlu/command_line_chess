@@ -220,4 +220,18 @@ describe Board do
       end
     end
   end
+
+  describe '#check?' do
+    context 'when it is in check' do
+      let(:pieces) do
+        [{ color: :white, position: 'B2', class: King },
+         { color: :black, position: 'C3', class: Pawn }]
+      end
+      let(:dummy_board) { create_dummy(pieces) }
+      it 'will return false' do
+        result = dummy_board.check?(:white)
+        expect(result).to be_truthy
+      end
+    end
+  end
 end

@@ -31,7 +31,6 @@ class Game
 
   def start
     loop do
-      @board.update_valid_moves
       puts @board
       break if win_draw_condition?
 
@@ -40,7 +39,7 @@ class Game
       move = ask_for_move
       break if move.nil?
 
-      apply_move(move[:initial_pos], move[:final_pos])
+      apply_move(move[:initial_pos], move[:final_pos], @board)
       update_active_player
     end
     announce_outcome
@@ -55,18 +54,27 @@ class Game
     piece = piece_with_move(move_data)
     return false if piece.nil?
 
-    valid_start?(piece, piece.current_position) && valid_move_position?(piece, move_data[:position])
+    !will_result_in_check?(piece, move)
   end
 
   private
 
+  def will_result_in_check?(piece, move)
+    board_copy = Marshal.load(Marshal.dump(@board))
+    apply_move(piece.current_position, move[-2..].upcase, board_copy)
+
+    board_copy.check?(@active_player.color)
+  end
+
   def announce_outcome
-    if @win_draw.nil?
+    if @win_draw == :stalemate
       puts 'Game reached STALEMATE'
-    else
+    elsif @win_draw == :checkmate
       player = @active_player == @white ? @black : @white
       puts 'CHECKMATE!!'
       puts "#{player.name} HAS WON THE GAME!"
+    elsif @win_draw == :draw
+      puts 'Game has reached a DRAW'
     end
   end
 
@@ -87,7 +95,7 @@ class Game
     if @active_player.instance_of?(Computer)
       prompt_player
       move = @active_player.pick_random_move
-      print "#{move}\n"
+      print "#{move}\n" unless move.instance_of?(Array) # ONLY FOR TESTING
     else
       prompt_saving
       prompt_player
@@ -155,17 +163,19 @@ class Game
     { final_pos: final_pos, initial_pos: initial_pos }
   end
 
-  def apply_move(initial_pos, final_pos)
-    piece = get_piece(initial_pos, @board)
-    second_piece = get_piece(final_pos, @board)
+  def apply_move(initial_pos, final_pos, board_to_apply)
+    piece = get_piece(initial_pos, board_to_apply)
+    second_piece = get_piece(final_pos, board_to_apply)
 
     if castling?(piece, second_piece)
-      @board.handle_castling_move(initial_pos, final_pos)
+      board_to_apply.handle_castling_move(initial_pos, final_pos)
     else
-      @board.move_to(initial_pos, final_pos)
+      board_to_apply.move_to(initial_pos, final_pos)
       piece.update_position(final_pos)
-      @board.update_last_move(initial_pos, final_pos, piece)
+      board_to_apply.update_last_move(initial_pos, final_pos, piece)
     end
+
+    board_to_apply.update_valid_moves
   end
 
   # the only move where you can pick an ally to move to is Castling
@@ -275,35 +285,34 @@ class Game
     elsif piece.instance_of?(King)
       !opponent_controls_king_moves?
     else
-      does_not_result_in_check?(piece)
+      true
     end
   end
 
-  def does_not_result_in_check?(piece)
+  def does_not_result_in_check?(piece, move)
     opponent_pieces = if @active_player.color == :white
                         get_pieces(:black)
                       else
                         get_pieces(:white)
                       end
 
-    !opens_path_to_king?(piece, opponent_pieces)
+    !opens_path_to_king?(piece, opponent_pieces, move)
   end
 
   # if piece is moved
-  def opens_path_to_king?(piece, opponent_pieces)
-    position = piece.current_position
-
-    return false unless piece.diagonal?(position) || piece.vertical_horizontal?(position)
-
+  def opens_path_to_king?(piece, opponent_pieces, move)
     king_position = active_king.current_position
+
+    return false unless piece.diagonal?(king_position) || piece.vertical_horizontal?(king_position)
+
+    position = piece.current_position
     direction_to_king = [get_direction(position[1], king_position[1]),
                          get_direction(position[0], king_position[0])]
 
-    position = piece.current_position
-
     opponent_pieces.each do |opponent|
       unless opponent.valid_moves.include?(position) &&
-             !(piece.instance_of?(Knight) || piece.instance_of?(Pawn) || piece.instance_of?(King))
+             !(piece.instance_of?(Knight) || piece.instance_of?(Pawn) || piece.instance_of?(King)) ||
+             opponent.current_position == move[-2..].upcase
         next
       end
 
@@ -355,7 +364,7 @@ class Game
             elsif piece.instance_of?(King)
               not_opponent_controlled(move)
             else
-              true
+              does_not_result_in_check?(piece, move)
             end
 
     @opponent_pieces_in_check = [] if valid
@@ -372,7 +381,11 @@ class Game
     opponent_pieces = @active_player.color == :white ? @board.black_pieces : @board.white_pieces
 
     opponent_pieces.each do |piece|
-      return false if piece.valid_moves.include?(move) || piece_can_take_position(piece, move)
+      if piece.instance_of?(Pawn)
+        return false if piece_can_take_position(piece, move)
+      elsif piece.valid_moves.include?(move) || piece_can_take_position(piece, move)
+        return false
+      end
     end
 
     true
@@ -427,14 +440,21 @@ class Game
 
   def win_draw_condition?
     if stalemate?
-      @win_draw = :draw
+      @win_draw = :stalemate
       return true
     elsif checkmate?
       @win_draw = :checkmate
       return true
+    elsif two_kings_left
+      @win_draw = :draw
+      return true
     end
 
     false
+  end
+
+  def two_kings_left
+    @board.white_pieces.length == 1 && @board.black_pieces.length == 1
   end
 
   def checkmate?
@@ -478,54 +498,11 @@ class Game
     return false if king.valid_moves.empty?
 
     found = Set[]
-
     king.valid_moves.each do |move|
-      get_pieces(opponent_color).each do |piece|
-        if piece.instance_of?(Pawn)
-          if piece_can_take_position(piece, move)
-            found.add(move)
-            break
-          end
-        elsif piece.valid_moves.include?(move) && @board.empty?(move)
-          found.add(move)
-          break
-        elsif !@board.empty?(move)
-          if piece_can_take_position(piece, move)
-            found.add(move)
-            break
-          end
-        end
-      end
+      found.add(move) if will_result_in_check?(king, move)
     end
 
     found == king.valid_moves
-  end
-
-  def piece_can_take_position(piece, position)
-    perimeter = positions_around(position)
-    if piece.instance_of?(Knight)
-      piece.all_moves(Knight::KNIGHT_MOVES).include?(position)
-    elsif piece.instance_of?(King)
-      piece.all_moves(King::KING_MOVES).include?(position)
-    elsif piece.instance_of?(Bishop)
-      piece.diagonal?(position) && piece.valid_moves.intersect?(perimeter) ||
-        piece.diagonal?(position) && perimeter.include?(piece.current_position)
-    elsif piece.instance_of?(Rook)
-      piece.vertical_horizontal?(position) && piece.valid_moves.intersect?(perimeter) ||
-        piece.vertical_horizontal?(position) && perimeter.include?(piece.current_position)
-    elsif piece.instance_of?(Pawn)
-      direction = piece.color == :white ? 1 : -1
-      forward_num = (piece.current_position[1].to_i + direction).to_s
-      piece.diagonal?(position) &&
-        perimeter.include?(piece.current_position) &&
-        position[1] == forward_num
-    elsif piece.instance_of?(Queen)
-      if piece.diagonal?(position) || piece.vertical_horizontal?(position)
-        piece.valid_moves.intersect?(perimeter) || perimeter.include?(piece.current_position)
-      else
-        false
-      end
-    end
   end
 
   def opponent_color

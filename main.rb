@@ -11,9 +11,13 @@ def play_game
     if available_load_file && yes?("\nWould you like to load a file? : ")
       file_name = choose_file
       game = load_save(file_name)
-    elsif yes?("\nWould you like to play against the Computer? : ")
+    elsif yes?("\nWould you computer to battle itself? : ")
       board = Board.new
       game = Game.new(board)
+    elsif yes?("\nWould you like to play against the Computer?")
+      board = Board.new
+      white = Player.new(:white)
+      game = Game.new(board, white)
     else
       board = Board.new
       white = Player.new(:white)
