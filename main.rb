@@ -34,7 +34,7 @@ end
 def load_save(file_name)
   YAML.load_file(
     "assets/saves/#{file_name}.yaml",
-    permitted_classes: [Game, Board, Player, King, Queen, Pawn, Rook, Knight, Bishop, Symbol, Set],
+    permitted_classes: [Game, Board, Player, King, Queen, Pawn, Rook, Knight, Bishop, Symbol, Set, Computer],
     aliases: true
   )
 end
