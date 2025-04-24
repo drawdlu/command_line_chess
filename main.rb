@@ -2,6 +2,7 @@ require_relative 'lib/game'
 require_relative 'lib/player'
 require_relative 'lib/computer'
 require_relative 'lib/board'
+require 'artii'
 
 def play_game
   prompt_instructions
@@ -11,23 +12,32 @@ def play_game
     if available_load_file && yes?("\nWould you like to load a file? : ")
       file_name = choose_file
       game = load_save(file_name)
-    elsif yes?("\nWould you computer to battle itself? : ")
-      board = Board.new
-      game = Game.new(board)
-    elsif yes?("\nWould you like to play against the Computer?")
-      board = Board.new
-      white = Player.new(:white)
-      game = Game.new(board, white)
     else
-      board = Board.new
-      white = Player.new(:white)
-      black = Player.new(:black)
-      game = Game.new(board, white, black)
+      modes = %w[a b c]
+      print 'Choose a mode HumanVsHuman, HumanVsComputer, ComputerVsComputer -> '
+      mode = choice(modes, ', ')
+      game = initialize_game(mode)
     end
 
     game.start
 
     break unless yes?("\nWould you like to play again? : ")
+  end
+end
+
+def initialize_game(mode)
+  board = Board.new
+
+  case mode
+  when 'a'
+    white = Player.new(:white)
+    black = Player.new(:black)
+    Game.new(board, white, black)
+  when 'b'
+    white = Player.new(:white)
+    Game.new(board, white)
+  when 'c'
+    Game.new(board)
   end
 end
 
@@ -83,7 +93,11 @@ def yes?(prompt)
 end
 
 def prompt_instructions
-  puts "Chess notations used in game:
+  base = Artii::Base.new
+  title = base.asciify('CL Chess')
+
+  puts title
+  puts "   Chess notations used in game:
     e5 - Pawn to e5
     dxc3 - Pawn on d takes c3
     Na3 - Knight to a3
