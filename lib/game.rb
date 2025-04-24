@@ -263,7 +263,7 @@ class Game
   end
 
   def stalemate?
-    opponent_controls_king_moves? && no_more_moves?
+    opponent_controls_king_moves? && no_more_moves? && !check?
   end
 
   def no_more_moves?
