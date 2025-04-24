@@ -1,5 +1,5 @@
 require_relative 'piece'
-require_relative 'positions'
+require_relative '../positions'
 
 class King < Piece
   KING_MOVES = [1, -1, 0].repeated_permutation(2).to_set.delete([0, 0])

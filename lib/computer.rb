@@ -1,7 +1,7 @@
 require_relative 'board'
 require_relative 'game'
 require_relative 'notation'
-require_relative 'pawn'
+require_relative 'pieces/pawn'
 
 # handles computer choosing a move
 class Computer

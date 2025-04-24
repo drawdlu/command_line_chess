@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'piece'
-require_relative 'positions'
+require_relative '../positions'
 require_relative 'rook'
 require_relative 'queen'
 require_relative 'bishop'
@@ -47,6 +47,8 @@ class Pawn < Piece
   end
 
   private
+
+  # MOVES
 
   def get_forward_move(x_index, y_index, direction)
     forward = square_name(x_index + direction, y_index)
@@ -114,6 +116,8 @@ class Pawn < Piece
       last_move[:from][1].to_i == initial_num &&
       last_move[:to][1].to_i == initial_num + direction
   end
+
+  # PROMOTE
 
   def create_piece_with_valid_moves(piece)
     new_piece = piece.new(@color, @current_position, @board)

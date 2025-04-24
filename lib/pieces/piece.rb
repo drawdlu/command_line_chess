@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'positions'
+require_relative '../positions'
 
 # superclass for chess pieces
 class Piece

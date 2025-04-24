@@ -65,17 +65,4 @@ module Positions
 
     within_range?(x_index) && within_range?(y_index)
   end
-
-  def positions_around(position)
-    around_pos = Set[]
-
-    King::KING_MOVES.each do |index|
-      next unless within_board?(position, index[0], index[1])
-
-      pos = move_pos(position, index[0], index[1])
-      around_pos.add(pos)
-    end
-
-    around_pos
-  end
 end

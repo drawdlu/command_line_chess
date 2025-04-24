@@ -1,6 +1,6 @@
 require_relative 'helpers/dummy_board'
 require_relative '../lib/board'
-require_relative '../lib/rook'
+require_relative '../lib/pieces/rook'
 
 describe Helpers::DummyBoard do
   let(:dummy_board) { Class.new { extend Helpers::DummyBoard } }

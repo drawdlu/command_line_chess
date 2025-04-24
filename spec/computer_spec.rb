@@ -4,9 +4,9 @@ require_relative '../lib/computer'
 require_relative '../lib/board'
 require_relative '../lib/game'
 require_relative '../lib/player'
-require_relative '../lib/queen'
-require_relative '../lib/king'
-require_relative '../lib/knight'
+require_relative '../lib/pieces/queen'
+require_relative '../lib/pieces/king'
+require_relative '../lib/pieces/knight'
 
 describe Computer do
   let(:board) { Board.new }
