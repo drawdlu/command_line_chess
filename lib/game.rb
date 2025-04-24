@@ -26,7 +26,6 @@ class Game
     @black = black
     @active_player = @white
     @win_draw = nil
-    @opponent_pieces_in_check = []
   end
 
   def start
@@ -59,11 +58,32 @@ class Game
 
   private
 
-  def will_result_in_check?(piece, move)
-    board_copy = Marshal.load(Marshal.dump(@board))
-    apply_move(piece.current_position, move[-2..].upcase, board_copy)
+  # PROMPTS
 
-    board_copy.check?(@active_player.color)
+  def prompt_player
+    puts "#{@active_player.name}'s turn to move"
+  end
+
+  def ask_for_move_position
+    move = ''
+    while move == ''
+      print 'MOVE: '
+      move = gets.chomp
+
+      break if valid_move?(move) || valid_castling?(move) || save?(move)
+
+      move = ''
+    end
+
+    move
+  end
+
+  def prompt_check
+    print "You are in CHECK\n"
+  end
+
+  def prompt_saving
+    puts "Type 'save' if you want to save current game.\n\n"
   end
 
   def announce_outcome
@@ -78,18 +98,19 @@ class Game
     end
   end
 
+  def prompt_multiple_pieces(pieces)
+    pieces.each do |piece|
+      print "#{piece.class} at #{piece.current_position} "
+    end
+    print "can take that position. Please clarify which one to move.\n"
+  end
+
   def legend
     "Legend: R - Rook | N - Knight | B - Bishop | Q - Queen | K - King
           x - take opponent\n\n"
   end
 
-  def prompt_check
-    print "You are in CHECK\n"
-  end
-
-  def update_active_player
-    @active_player = @active_player == @white ? @black : @white
-  end
+  # LOOP VALIDATING INPUT
 
   def ask_for_move
     if @active_player.instance_of?(Computer)
@@ -112,37 +133,8 @@ class Game
     end
   end
 
-  def prompt_saving
-    puts "Type 'save' if you want to save current game.\n\n"
-  end
-
-  def save
-    file_name = choose_name
-    create_save_directory
-    save_to_file(file_name)
-    puts 'Successfully saved the game'
-  end
-
-  def choose_name
-    puts
-    print 'Type a file name for your save file: '
-    gets.chomp
-  end
-
-  def create_save_directory
-    Dir.mkdir 'assets/saves' unless Dir.exist? 'assets/saves'
-  end
-
-  def save_to_file(file_name)
-    serialized = YAML.dump self
-    file = if File.exist?("assets/saves/#{file_name}.yaml")
-             File.open("assets/saves/#{file_name}.yaml", 'w')
-
-           else
-             File.new("assets/saves/#{file_name}.yaml", 'w')
-           end
-    file.write(serialized)
-    file.close
+  def save?(move)
+    'SAVE'.include?(move.upcase)
   end
 
   def castling_positions(move)
@@ -163,52 +155,8 @@ class Game
     { final_pos: final_pos, initial_pos: initial_pos }
   end
 
-  def apply_move(initial_pos, final_pos, board_to_apply)
-    piece = get_piece(initial_pos, board_to_apply)
-    second_piece = get_piece(final_pos, board_to_apply)
-
-    if castling?(piece, second_piece)
-      board_to_apply.handle_castling_move(initial_pos, final_pos)
-    else
-      board_to_apply.move_to(initial_pos, final_pos)
-      piece.update_position(final_pos)
-      board_to_apply.update_last_move(initial_pos, final_pos, piece)
-    end
-
-    board_to_apply.update_valid_moves
-  end
-
-  # the only move where you can pick an ally to move to is Castling
-  def castling?(piece1, piece2)
-    return false if piece2.nil?
-
-    piece1.color == piece2.color
-  end
-
-  def prompt_player
-    puts "#{@active_player.name}'s turn to move"
-  end
-
-  def ask_for_move_position
-    move = ''
-    while move == ''
-      print 'MOVE: '
-      move = gets.chomp
-
-      break if valid_move?(move) || valid_castling?(move) || save?(move)
-
-      move = ''
-    end
-
-    move
-  end
-
-  def save?(move)
-    'SAVE'.include?(move.upcase)
-  end
-
   def valid_castling?(move)
-    return false unless @opponent_pieces_in_check.empty?
+    return false if check?
 
     if king_side?(move)
       valid_castling_side?('H')
@@ -262,13 +210,6 @@ class Game
     valid_pieces[0] if length == 1
   end
 
-  def prompt_multiple_pieces(pieces)
-    pieces.each do |piece|
-      print "#{piece.class} at #{piece.current_position} "
-    end
-    print "can take that position. Please clarify which one to move.\n"
-  end
-
   def correct_piece?(piece, partial_position, piece_class, position)
     return false if !partial_position.nil? && !piece.current_position.include?(partial_position)
 
@@ -276,201 +217,49 @@ class Game
       piece.valid_moves.include?(position)
   end
 
-  def valid_start?(piece, position)
-    check_num = @opponent_pieces_in_check.length
-    if check_num.positive?
-      return active_king.current_position == position if check_num > 1
+  # UPDATING DATA
 
-      initial_could_remove_check?(position)
-    elsif piece.instance_of?(King)
-      !opponent_controls_king_moves?
+  def apply_move(initial_pos, final_pos, board_to_apply)
+    piece = get_piece(initial_pos, board_to_apply)
+    second_piece = get_piece(final_pos, board_to_apply)
+
+    if castling?(piece, second_piece)
+      board_to_apply.handle_castling_move(initial_pos, final_pos)
     else
-      true
-    end
-  end
-
-  def does_not_result_in_check?(piece, move)
-    opponent_pieces = if @active_player.color == :white
-                        get_pieces(:black)
-                      else
-                        get_pieces(:white)
-                      end
-
-    !opens_path_to_king?(piece, opponent_pieces, move)
-  end
-
-  # if piece is moved
-  def opens_path_to_king?(piece, opponent_pieces, move)
-    king_position = active_king.current_position
-
-    return false unless piece.diagonal?(king_position) || piece.vertical_horizontal?(king_position)
-
-    position = piece.current_position
-    direction_to_king = [get_direction(position[1], king_position[1]),
-                         get_direction(position[0], king_position[0])]
-
-    opponent_pieces.each do |opponent|
-      unless opponent.valid_moves.include?(position) &&
-             !(piece.instance_of?(Knight) || piece.instance_of?(Pawn) || piece.instance_of?(King)) ||
-             opponent.current_position == move[-2..].upcase
-        next
-      end
-
-      opponent_position = opponent.current_position
-      direction_to_position = [get_direction(opponent_position[1], position[1]),
-                               get_direction(opponent_position[0], position[0])]
-
-      return true if direction_to_king == direction_to_position
+      board_to_apply.move_to(initial_pos, final_pos)
+      piece.update_position(final_pos)
+      board_to_apply.update_last_move(initial_pos, final_pos, piece)
     end
 
-    false
+    board_to_apply.update_valid_moves
   end
 
-  def initial_could_remove_check?(position)
-    piece = get_piece(position, @board)
+  # the only move where you can pick an ally to move to is Castling
+  def castling?(piece1, piece2)
+    return false if piece2.nil?
 
-    if active_king == piece
-      !opponent_controls_king_moves?
-    else
-      ally_contains_protect_king(piece)
-    end
+    piece1.color == piece2.color
   end
 
-  def ally_contains_protect_king(piece)
-    protect_moves = squares_to_protect_king
-    piece.valid_moves.each do |move|
-      return true if protect_moves.include?(move)
-    end
-
-    false
+  def update_active_player
+    @active_player = @active_player == @white ? @black : @white
   end
 
-  def squares_to_protect_king
-    king_position = active_king.current_position
-    opponent_position = @opponent_pieces_in_check[0].current_position
-    x_direction = get_direction(king_position[1], opponent_position[1])
-    y_direction = get_direction(king_position[0], opponent_position[0])
-    active_king.directional_moves([{ x: x_direction, y: y_direction }]) + Set[opponent_position]
-  end
-
-  def valid_move_position?(piece, move)
-    check_num = @opponent_pieces_in_check.length
-    valid = if check_num.positive?
-              if piece.instance_of?(King)
-                not_opponent_controlled(move)
-              else
-                move_to_protect?(move)
-              end
-            elsif piece.instance_of?(King)
-              not_opponent_controlled(move)
-            else
-              does_not_result_in_check?(piece, move)
-            end
-
-    @opponent_pieces_in_check = [] if valid
-
-    valid
-  end
-
-  def move_to_protect?(move)
-    squares_to_protect_king.include?(move) ||
-      @opponent_pieces_in_check[0].current_position == move
-  end
-
-  def not_opponent_controlled(move)
-    opponent_pieces = @active_player.color == :white ? @board.black_pieces : @board.white_pieces
-
-    opponent_pieces.each do |piece|
-      if piece.instance_of?(Pawn)
-        return false if piece_can_take_position(piece, move)
-      elsif piece.valid_moves.include?(move) || piece_can_take_position(piece, move)
-        return false
-      end
-    end
-
-    true
-  end
-
-  def ally?(position)
-    index = get_name_index(position)
-
-    @board.board[index[:x]][index[:y]].color == @active_player.color
-  end
+  # CHECK, CHECKMATE, STALEMATE, DRAW
 
   def check?
-    update_opponent_pieces_in_check
-    @opponent_pieces_in_check.length.positive?
+    @board.check?(@active_player.color)
   end
 
-  def update_opponent_pieces_in_check
-    check = []
-    ally_king = active_king.current_position
-    opponent_color = @active_player.color == :white ? :black : :white
+  def will_result_in_check?(piece, move)
+    board_copy = Marshal.load(Marshal.dump(@board))
+    apply_move(piece.current_position, move[-2..].upcase, board_copy)
 
-    get_pieces(opponent_color).each do |piece|
-      check.push(piece) if piece.valid_moves.include?(ally_king)
-    end
-
-    @opponent_pieces_in_check = check
-  end
-
-  def get_from_set(set_pieces, piece_class)
-    set_pieces.each do |piece|
-      return piece if piece.instance_of?(piece_class)
-    end
-
-    nil
-  end
-
-  def active_king
-    if @active_player.color == :white
-      get_from_set(@board.white_pieces, King)
-    else
-      get_from_set(@board.black_pieces, King)
-    end
-  end
-
-  def get_pieces(color)
-    if color == :black
-      @board.black_pieces
-    else
-      @board.white_pieces
-    end
-  end
-
-  def win_draw_condition?
-    if stalemate?
-      @win_draw = :stalemate
-      return true
-    elsif checkmate?
-      @win_draw = :checkmate
-      return true
-    elsif two_kings_left
-      @win_draw = :draw
-      return true
-    end
-
-    false
+    board_copy.check?(@active_player.color)
   end
 
   def two_kings_left
     @board.white_pieces.length == 1 && @board.black_pieces.length == 1
-  end
-
-  def checkmate?
-    opponent_controls_king_moves? && check? && no_move_to_protect?
-  end
-
-  def no_move_to_protect?
-    return true if @opponent_pieces_in_check.length > 1
-
-    pieces = active_player_pieces
-    pieces.each do |piece|
-      next if piece.instance_of?(King)
-
-      return false if ally_contains_protect_king(piece)
-    end
-    true
   end
 
   def stalemate?
@@ -485,14 +274,6 @@ class Game
     true
   end
 
-  def active_player_pieces
-    if @active_player.color == :white
-      @board.white_pieces
-    else
-      @board.black_pieces
-    end
-  end
-
   def opponent_controls_king_moves?
     king = active_king
     return false if king.valid_moves.empty?
@@ -505,7 +286,105 @@ class Game
     found == king.valid_moves
   end
 
-  def opponent_color
-    @active_player.color == :white ? :black : :white
+  def checkmate?
+    opponent_controls_king_moves? && check? && no_move_to_protect?
+  end
+
+  def no_move_to_protect?
+    pieces = active_player_pieces
+    pieces.each do |piece|
+      next if piece.instance_of?(King)
+
+      return false if ally_contains_protect_king(piece)
+    end
+    true
+  end
+
+  def ally_contains_protect_king(piece)
+    piece.valid_moves.each do |move|
+      return true unless will_result_in_check?(piece, move)
+    end
+
+    false
+  end
+
+  def win_draw_condition?
+    if checkmate?
+      @win_draw = :stalemate
+      return true
+    elsif stalemate?
+      @win_draw = :checkmate
+      return true
+    elsif two_kings_left
+      @win_draw = :draw
+      return true
+    end
+
+    false
+  end
+
+  # HELPERS EXTRACTING DATA
+
+  def active_king
+    if @active_player.color == :white
+      get_from_set(@board.white_pieces, King)
+    else
+      get_from_set(@board.black_pieces, King)
+    end
+  end
+
+  def active_player_pieces
+    if @active_player.color == :white
+      @board.white_pieces
+    else
+      @board.black_pieces
+    end
+  end
+
+  def get_from_set(set_pieces, piece_class)
+    set_pieces.each do |piece|
+      return piece if piece.instance_of?(piece_class)
+    end
+
+    nil
+  end
+
+  def get_pieces(color)
+    if color == :black
+      @board.black_pieces
+    else
+      @board.white_pieces
+    end
+  end
+
+  # SAVING
+
+  def save
+    file_name = choose_name
+    create_save_directory
+    save_to_file(file_name)
+    puts 'Successfully saved the game'
+  end
+
+  def choose_name
+    puts
+    print 'Type a file name for your save file: '
+    gets.chomp
+  end
+
+  def create_save_directory
+    Dir.mkdir 'assets/saves' unless Dir.exist? 'assets/saves'
+  end
+
+  def save_to_file(file_name)
+    serialized = YAML.dump self
+    file = if File.exist?("assets/saves/#{file_name}.yaml")
+             File.open("assets/saves/#{file_name}.yaml", 'w')
+
+           else
+             File.new("assets/saves/#{file_name}.yaml", 'w')
+           end
+    file.write(serialized)
+    file.close
   end
 end
