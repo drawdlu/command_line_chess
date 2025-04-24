@@ -16,10 +16,7 @@ class Computer
   end
 
   def pick_random_move
-    pieces = color == :black ? @game.board.black_pieces.to_a.shuffle : @game.board.white_pieces.to_a.shuffle
-    move = nil
-    piece = nil
-    notation = nil
+    pieces = @game.board.get_pieces(@color).to_a.shuffle
 
     pieces.each do |black_piece|
       black_piece.valid_moves.to_a.shuffle.each do |position|
@@ -49,8 +46,8 @@ class Computer
 
   def get_class(piece, move)
     piece_class = piece.class
-    Game::MOVES.each_key do |key|
-      return key.to_s if Game::MOVES[key] == piece_class
+    MOVES.each_key do |key|
+      return key.to_s if MOVES[key] == piece_class
     end
 
     @game.board.empty?(move) ? '' : piece.current_position[0].downcase

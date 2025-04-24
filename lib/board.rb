@@ -71,6 +71,14 @@ class Board
     false
   end
 
+  def get_pieces(color)
+    if color == :black
+      black_pieces
+    else
+      white_pieces
+    end
+  end
+
   private
 
   def update_piece_position(initial_index, final_index)

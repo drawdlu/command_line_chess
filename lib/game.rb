@@ -278,7 +278,7 @@ class Game
   end
 
   def no_more_moves?
-    get_pieces(@active_player.color).each do |piece|
+    @board.get_pieces(@active_player.color).each do |piece|
       return false if !piece.instance_of?(King) && !piece.valid_moves.empty?
     end
 
@@ -358,14 +358,6 @@ class Game
     end
 
     nil
-  end
-
-  def get_pieces(color)
-    if color == :black
-      @board.black_pieces
-    else
-      @board.white_pieces
-    end
   end
 
   # SAVING
