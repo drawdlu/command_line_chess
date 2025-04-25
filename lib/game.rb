@@ -110,13 +110,29 @@ class Game
           x - take opponent\n\n"
   end
 
+  def print_computer_move(move)
+    data = extract_data(move)
+    piece1 = piece_with_move(data)
+    piece2 = get_piece(move[-2..].upcase, @board)
+
+    if castling?(piece1, piece2)
+      if piece1.current_position[0] == 'H' || piece2.current_position[0] == 'H'
+        puts '0-0'
+      else
+        puts '0-0-0'
+      end
+    else
+      puts move
+    end
+  end
+
   # LOOP VALIDATING INPUT
 
   def ask_for_move
     if @active_player.instance_of?(Computer)
       prompt_player
       move = @active_player.pick_random_move
-      print "#{move}\n" unless move.instance_of?(Array) # ONLY FOR TESTING
+      print_computer_move(move)
     else
       prompt_saving
       prompt_player
