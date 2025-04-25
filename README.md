@@ -3,14 +3,15 @@
 This program applies every movement constraints in chess including: 
 - En passant
 - Castling
-- Limiting valid moves during a check
-- Limiting valid moves that will result in a check
+- Limiting moves during a check
+- Limiting moves that will result in a check
+- Promoting Pawn
 
 ## Features
 - - - 
 - Saving current game state to a filename input by user
 - Uses chess notations as input for movement
-- Rejects invalid movements
+- Rejects illegal movements
 - Checks end game conditions (Stalemate, Checkmate, Draw)
 - Detects whether a move will result in check
 - 3 modes
